@@ -1,0 +1,60 @@
+<div class="container">
+  <div class="container__left-side">
+    <div class="header">
+      <h2>Angular PDF highlighter</h2>
+      <div class="link">
+        <a
+          href="https://github.com/kbatyrbayev/ng-pdf-highlighter"
+          target="blank"
+          >Open in GitHub</a
+        >
+      </div>
+    </div>
+    <div class="list">
+      <div
+        class="list-row"
+        *ngFor="let list of areaInfoInPixels"
+        (click)="moveTo(list); $event.stopPropagation()"
+      >
+        <div class="delete-btn">
+          <i
+            class="material-icons icon"
+            (click)="delete(list); $event.stopPropagation()"
+            >close</i
+          >
+        </div>
+        <div class="title">Position:</div>
+        <pre>
+          <div [innerHTML]="list?.rect | json"></div>
+        </pre>
+        <div class="page-number">Page {{ list?.pageNumber }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="container__right-side"
+    (mousemove)="mouseEvent($event)"
+    (mousedown)="mouseEvent($event)"
+    (mouseup)="mouseEvent($event)"
+  >
+    <pdf-viewer
+      [original-size]="false"
+      (window:resize)="onResize($event)"
+      src="./assets/textractTestPdf.pdf"
+      id="foo"
+      [show-all]="true"
+      [render-text]="true"
+      [autoresize]="true"
+      (page-rendered)="pageRendered($event)"
+      style="display: block;"
+    ></pdf-viewer>
+  </div>
+</div>
+
+<div class="js-popper popper" [style.display]="getStyle()">
+  <div class="icons">
+    <i class="material-icons icon icon-apply" (click)="save()">check_box</i>
+    <i class="material-icons icon icon-close" (click)="cancel()">close</i>
+  </div>
+</div>
