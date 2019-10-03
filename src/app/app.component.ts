@@ -1,13 +1,15 @@
 import { Component } from '@angular/core';
 import * as Popper from 'popper.js/dist/umd/popper.js';
 import * as $ from 'jquery';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  constructor() {
+  constructor(private formBuilder: FormBuilder) {
     setTimeout(() => {
       this.pageCoordinates = document
         .getElementById('page1')
@@ -49,6 +51,23 @@ export class AppComponent {
       }
     ];
   }
+  adminForm: FormGroup;
+  myData = ["Date","Text","ss"];
+  postDataModel: postDataModel[] = [];
+  mergefieldstring:string[];
+
+
+  ngOnInit() {
+    this.mergefieldstring = [];
+    this.type_field = [];
+    this.radio_type = [];
+    this.adminForm  =  this.formBuilder.group({
+        highlightedText: ['', Validators.required],
+        mergeField: ['', Validators.required],
+        typeOfField: ['', Validators.required],
+        radioButton: ['', Validators.required]
+    });
+}
   rect: Rectangle = { x1: 0, y1: 0, x2: 0, y2: 0, width: 0, height: 0 };
   lastMousePosition: Position = { x: 0, y: 0 };
   canvasPosition: Position = { x: 0, y: 0 };
@@ -77,7 +96,8 @@ export class AppComponent {
   onPageLoad: number;
   // added new div with rects when pages rendered
   indexOfPage = 1;
-
+  type_field:string[];
+  radio_type:string[];
   showPopup = false;
   extractedData: string[] = [];
   listRectangleId = '';
@@ -86,7 +106,46 @@ export class AppComponent {
     const image = document.getElementById('page1');
     console.log('area info', image.getBoundingClientRect());
   }
-
+  postData(){
+   
+    // model.highlighted_text = null;
+    // model.merged_field 
+    
+    console.log(this.mergefieldstring);
+    for(var i = 0; i< this.mergefieldstring.length; i++){
+     let model: postDataModel = new postDataModel();
+     model.highlighted_text = this.extractedData[i];
+     model.merged_field = this.mergefieldstring[i]
+     model.raidof_ield = this.radio_type[i];
+     model.type_of_field = this.type_field[i];
+      this.postDataModel.push(model);
+    }
+    console.log(this.postDataModel);
+  }
+  fieldtype(event){
+      
+      let Event = event.target.value
+      for(var i =0;i<this.extractedData.length;i++)
+      {
+    
+    if(Event!=null){this.type_field.push(Event);}
+    
+    Event = null;
+      }
+    console.log(this.type_field);
+  }
+  radiotype(event){
+      
+    let Event = event.target.value
+    for(var i =0;i<this.extractedData.length;i++)
+    {
+  
+  if(Event!=null){this.radio_type.push(Event);}
+  
+  Event = null;
+    }
+  console.log(this.radio_type);
+}
   setpixels() {
     this.areaInfoInPixels = [] = [];
     this.areaInfo.forEach((x) => {
@@ -103,6 +162,15 @@ export class AppComponent {
       this.areaInfoInPixels.push(areaCooradinate);
       this.extractedData.push(x.Text);
     });
+    // this.postDataModel = [];
+    // let model: postDataModel = new postDataModel();
+    // this.extractedData.forEach((x) =>{
+    // model.highlighted_text = x;
+    // this.postDataModel.push(model);
+   
+   
+    // });
+    // console.log(this.postDataModel);
     console.log('Area Info in pixels', this.areaInfoInPixels);
     console.log('extracted text', this.extractedData);
     
@@ -346,4 +414,10 @@ class PagePixels {
   width: number;
   x: number;
   y: number;
+}
+class postDataModel{
+  highlighted_text: string;
+  type_of_field: string;
+  merged_field: string;
+  raidof_ield: string;
 }

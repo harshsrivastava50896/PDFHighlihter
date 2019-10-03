@@ -10,7 +10,11 @@
         overflow-x: auto;
     }
     &__right-side {
-        width: 80%;
+        width: 50%;
+        overflow-x: auto;
+    }
+    &__rightmost-side {
+        width: 30%;
         overflow-x: auto;
     }
 }
@@ -95,4 +99,7 @@
             font-size: 12px;
         }
     }
+}
+.form-spacing{
+    margin: 30px;
 }
