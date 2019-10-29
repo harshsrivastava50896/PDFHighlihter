@@ -5,6 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { FormAdminComponent } from './form-admin/form-admin/form-admin.component';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 @NgModule({
   declarations: [
@@ -12,11 +13,12 @@ import { FormAdminComponent } from './form-admin/form-admin/form-admin.component
     FormAdminComponent,
   ],
   imports: [
-    BrowserModule,
+  BrowserModule,
     AppRoutingModule,
     FormsModule,
     PdfViewerModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgxSpinnerModule
   ],
   providers: [],
   bootstrap: [AppComponent]
