@@ -8,27 +8,31 @@ import {
   FormControl
 } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { THIS_EXPR, ThrowStmt } from '@angular/compiler/src/output/output_ast';
 import * as json from '../assets/sample3.json';
-import { NgxSpinnerService } from "ngx-spinner";
-import { PDFDocumentProxy } from "pdfjs-dist";
+import { NgxSpinnerService } from 'ngx-spinner';
+import { PDFDocumentProxy } from 'pdfjs-dist';
+import { toBase64String } from '@angular/compiler/src/output/source_map';
 const httpOptions = {
   headers: new HttpHeaders({
-
-    'Content-Type': 'application/json',
-    'cache-control': 'no-cache',
-    'Postman-Token': '4e7320e7-4714-4dce-8fe9-e1de25b89e3f',
+    'Content-Type': 'application/json'
   })
 };
-httpOptions.headers.append('Host','um34zvea5c.execute-api.us-east-1.amazonaws.com');
+httpOptions.headers.append(
+  'Host',
+  'um34zvea5c.execute-api.us-east-1.amazonaws.com'
+);
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-
 export class AppComponent {
-  constructor(private formBuilder: FormBuilder, private spinner: NgxSpinnerService, private httpService: HttpClient) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private spinner: NgxSpinnerService,
+    private httpService: HttpClient
+  ) {
     setTimeout(() => {
       this.pageCoordinates = document
         .getElementById('page1')
@@ -82,6 +86,7 @@ export class AppComponent {
   isDictDataLoaded = false;
   sampleDict: AreaInfo[] = json['default'];
   sampleDictactedFields = ['Department', 'transfer'];
+  tobase64Data: any;
 
   rect: Rectangle = { x1: 0, y1: 0, x2: 0, y2: 0, width: 0, height: 0 };
   lastMousePosition: Position = { x: 0, y: 0 };
@@ -119,7 +124,6 @@ export class AppComponent {
   listRectangleId = '';
 
   ngOnInit() {
-
     this.mergefieldstring = [];
     this.type_field = [];
     this.radio_type = [];
@@ -226,7 +230,7 @@ export class AppComponent {
             if (this.rect.width > 0 && this.rect.height > 0) {
               document
                 .getElementsByClassName('to-draw-rectangle')
-              [this.dataPageNumber - 1].appendChild(this.element);
+                [this.dataPageNumber - 1].appendChild(this.element);
             }
           }
         }
@@ -298,7 +302,6 @@ export class AppComponent {
 
     $('.textLayer').addClass('disable-textLayer');
 
-
     if (this.isDictDataLoaded) {
       this.sampleDictactedFields.forEach((x) => {
         this.areaInfoInPixels.forEach((element) => {
@@ -332,11 +335,8 @@ export class AppComponent {
       });
 
       this.indexOfPage++;
-
     }
-
   }
-
 
   composedPath(el) {
     const path = [];
@@ -407,16 +407,15 @@ export class AppComponent {
     const files: File[] = event.target.files;
     if (files.length > 0) {
       this.file = files[0];
+      console.log('inital content', files);
+
+      console.log('file contents', this.file);
+
       this.filename = this.file.name;
       if (typeof FileReader !== 'undefined') {
         const reader = new FileReader();
-        let formData = new FormData();
-        formData.append('file', this.file, this.filename);
-        setTimeout(() => {
-          this.httpService.post('https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/upload',formData,httpOptions).subscribe(response => {
-            console.log(response);
-          })
-        }, 10000);
+        const formData = new FormData();
+        // formData.append('file', this.tobase64Data, this.filename);
 
         // reader.onloadend = (e: any) => {
         //   if (this.file.type === 'application/pdf') {
@@ -430,9 +429,40 @@ export class AppComponent {
         //   // this.handleAttachmentsInOfflineMode();
         // };
 
-        // reader.readAsArrayBuffer(this.file);
+        reader.readAsArrayBuffer(this.file);
+
+        reader.onload = (e: any) => {
+          console.log('event', e);
+
+          // console.log('in promise', reader.result);
+          this.tobase64Data = this.arrayBufferToBase64(reader.result);
+          console.log('btoa', this.arrayBufferToBase64(reader.result));
+          this.httpService
+          .post(
+            'https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/upload',
+             {data :this.tobase64Data, filePath:this.filename},
+            httpOptions
+          )
+          .subscribe((response) => {
+            // the internal call for docx
+           setTimeout(() => {
+                // to get dictionary
+                // after dictionary loaded hit the python api parameters => unique id
+                // the entities
+           }, 30000);
+          });
+        };
       }
     }
+  }
+  arrayBufferToBase64(buffer) {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary);
   }
 }
 
