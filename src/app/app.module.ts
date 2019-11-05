@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { FormAdminComponent } from './form-admin/form-admin/form-admin.component';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { HttpClientModule } from "@angular/common/http";
 
 @NgModule({
   declarations: [
@@ -13,12 +14,13 @@ import { NgxSpinnerModule } from 'ngx-spinner';
     FormAdminComponent,
   ],
   imports: [
-  BrowserModule,
+BrowserModule,
     AppRoutingModule,
     FormsModule,
     PdfViewerModule,
     ReactiveFormsModule,
-    NgxSpinnerModule
+    NgxSpinnerModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

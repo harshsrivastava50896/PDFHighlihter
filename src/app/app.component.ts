@@ -7,17 +7,28 @@ import {
   Validators,
   FormControl
 } from '@angular/forms';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import * as json from '../assets/sample3.json';
 import { NgxSpinnerService } from "ngx-spinner";
 import { PDFDocumentProxy } from "pdfjs-dist";
+const httpOptions = {
+  headers: new HttpHeaders({
+
+    'Content-Type': 'application/json',
+    'cache-control': 'no-cache',
+    'Postman-Token': '4e7320e7-4714-4dce-8fe9-e1de25b89e3f',
+  })
+};
+httpOptions.headers.append('Host','um34zvea5c.execute-api.us-east-1.amazonaws.com');
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
+
 export class AppComponent {
-  constructor(private formBuilder: FormBuilder, private spinner: NgxSpinnerService) {
+  constructor(private formBuilder: FormBuilder, private spinner: NgxSpinnerService, private httpService: HttpClient) {
     setTimeout(() => {
       this.pageCoordinates = document
         .getElementById('page1')
@@ -106,6 +117,7 @@ export class AppComponent {
   showPopup = false;
   extractedData: string[] = [];
   listRectangleId = '';
+
   ngOnInit() {
 
     this.mergefieldstring = [];
@@ -398,20 +410,27 @@ export class AppComponent {
       this.filename = this.file.name;
       if (typeof FileReader !== 'undefined') {
         const reader = new FileReader();
+        let formData = new FormData();
+        formData.append('file', this.file, this.filename);
+        setTimeout(() => {
+          this.httpService.post('https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/upload',formData,httpOptions).subscribe(response => {
+            console.log(response);
+          })
+        }, 10000);
 
-        reader.onloadend = (e: any) => {
-          if (this.file.type === 'application/pdf') {
-            this.isPdf = true;
-            this.data = new Uint8Array(e.target.result);
-            this.isDictDataLoaded = true;
+        // reader.onloadend = (e: any) => {
+        //   if (this.file.type === 'application/pdf') {
+        //     this.isPdf = true;
+        //     this.data = new Uint8Array(e.target.result);
+        //     this.isDictDataLoaded = true;
 
-          } else {
-            this.isPdf = false;
-          }
-          // this.handleAttachmentsInOfflineMode();
-        };
+        //   } else {
+        //     this.isPdf = false;
+        //   }
+        //   // this.handleAttachmentsInOfflineMode();
+        // };
 
-        reader.readAsArrayBuffer(this.file);
+        // reader.readAsArrayBuffer(this.file);
       }
     }
   }
