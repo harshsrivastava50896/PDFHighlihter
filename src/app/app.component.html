@@ -17,7 +17,7 @@
             >close</i
           >
         </div>
-        <div class="title">Position:</div>  
+        <div class="title">Position:</div>
         <pre>
           <div [innerHTML]="list?.rect | json"></div>
         </pre>
@@ -47,6 +47,7 @@
   </div>
   <div class="container__rightmost-side">
     <input type="file" (change)="onFileChange($event)" />
+    <p *ngIf="processsingData">Processing Data...........</p>
     <form [formGroup]="adminForm">
       <div *ngFor="let data of extractedData; let i = index">
         <p class="form-spacing">
@@ -87,7 +88,7 @@
         <br />
         <br />
       </div>
-      <button (click)="postData()" class="form-spacing" type="button">
+      <button *ngIf="showForm" (click)="postData()" class="form-spacing" type="button">
         Submit
       </button>
     </form>

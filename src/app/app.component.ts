@@ -13,6 +13,7 @@ import * as json from '../assets/sample3.json';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { PDFDocumentProxy } from 'pdfjs-dist';
 import { toBase64String } from '@angular/compiler/src/output/source_map';
+import { catchError, retry } from 'rxjs/operators';
 const httpOptions = {
   headers: new HttpHeaders({
     'Content-Type': 'application/json'
@@ -87,7 +88,8 @@ export class AppComponent {
   sampleDict: AreaInfo[] = json['default'];
   sampleDictactedFields = ['Department', 'transfer'];
   tobase64Data: any;
-
+  processsingData = false;
+showForm :boolean =  false;
   rect: Rectangle = { x1: 0, y1: 0, x2: 0, y2: 0, width: 0, height: 0 };
   lastMousePosition: Position = { x: 0, y: 0 };
   canvasPosition: Position = { x: 0, y: 0 };
@@ -402,6 +404,7 @@ export class AppComponent {
   }
 
   public onFileChange(event: any) {
+    this.processsingData = true;
     console.log('dict ------>', this.sampleDict[0]);
     this.file = null;
     const files: File[] = event.target.files;
@@ -438,19 +441,69 @@ export class AppComponent {
           this.tobase64Data = this.arrayBufferToBase64(reader.result);
           console.log('btoa', this.arrayBufferToBase64(reader.result));
           this.httpService
-          .post(
-            'https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/upload',
-             {data :this.tobase64Data, filePath:this.filename},
-            httpOptions
-          )
-          .subscribe((response) => {
-            // the internal call for docx
-           setTimeout(() => {
+            .post(
+              'https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/upload',
+              { data: this.tobase64Data, filePath: this.filename },
+              httpOptions
+            )
+            .subscribe((response: any) => {
+              // the internal call for docx
+
+              const headers = new HttpHeaders().set(
+                'Content-Type',
+                'text/plain; charset=utf-8'
+              );
+              this.httpService
+                .get(
+                  'https://localhost:44382/api/DocConvert/Convert?id=' +
+                    response.TemplateId +
+                    '/' +
+                    this.filename,
+                  { headers, responseType: 'text' as 'json' }
+                )
+                .subscribe((asposConvertedData) => {
+                  console.log('response', asposConvertedData);
+                  this.httpService
+                    .post(
+                      'https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/download',
+                      {
+                        TemplateId: response.TemplateId,
+                        Type: 'Dictionary'
+                      },
+                      httpOptions
+                    )
+                    .pipe(retry(100))
+                    .subscribe((conversion: any) => {
+                      console.log('dict ---->', conversion);
+                      this.sampleDict = conversion.data;
+                      if (this.file.type === 'application/pdf') {
+                        this.isPdf = true;
+                        this.data = new Uint8Array(e.target.result);
+                        this.isDictDataLoaded = true;
+                        this.processsingData = false;
+                        this.showForm = true;
+                      } else {
+                        this.isPdf = false;
+                      }
+                    });
+                  // if (this.file.type === 'application/pdf') {
+                  //       this.isPdf = true;
+                  //       this.data = new Uint8Array(e.target.result);
+                  //       this.isDictDataLoaded = true;
+
+                  //     } else {
+                  //       this.isPdf = false;
+                  //     }
+
+                  //  error => {}   //this.handleAttachmentsInOfflineMode();
+                });
+
+              setTimeout(() => {
                 // to get dictionary
                 // after dictionary loaded hit the python api parameters => unique id
                 // the entities
-           }, 30000);
-          });
+              }, 30000);
+            });
         };
       }
     }
