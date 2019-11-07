@@ -15,6 +15,7 @@ import { PDFDocumentProxy } from 'pdfjs-dist';
 import { toBase64String } from '@angular/compiler/src/output/source_map';
 import { catchError, retry } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { MergeFieldGeneratorService } from './merge-field-generator.service.js';
 const httpOptions = {
   headers: new HttpHeaders({
     'Content-Type': 'application/json'
@@ -33,7 +34,8 @@ export class AppComponent {
   constructor(
     private formBuilder: FormBuilder,
     private spinner: NgxSpinnerService,
-    private httpService: HttpClient
+    private httpService: HttpClient,
+    private apiService: MergeFieldGeneratorService
   ) {
     setTimeout(() => {
       this.pageCoordinates = document
@@ -479,16 +481,8 @@ export class AppComponent {
                 .subscribe((asposConvertedData) => {
                   // console.log('response', asposConvertedData);
                   setTimeout(() => {
-                    this.httpService
-                      .post(
-                        'https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/download',
-                        {
-                          TemplateId: response.TemplateId,
-                          Type: 'Dictionary'
-                        },
-                        httpOptions
-                      )
-                      .pipe(retry(3))
+                    this.apiService
+                      .getDictionaryDetails(response.TemplateId)
                       .subscribe((conversion: any) => {
                         console.log('dict ---->', conversion);
                         this.sampleDict = conversion.data;
