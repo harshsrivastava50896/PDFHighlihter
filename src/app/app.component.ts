@@ -14,6 +14,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { PDFDocumentProxy } from 'pdfjs-dist';
 import { toBase64String } from '@angular/compiler/src/output/source_map';
 import { catchError, retry } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 const httpOptions = {
   headers: new HttpHeaders({
     'Content-Type': 'application/json'
@@ -89,7 +90,7 @@ export class AppComponent {
   sampleDictactedFields = ['Department', 'transfer'];
   tobase64Data: any;
   processsingData = false;
-showForm :boolean =  false;
+  showForm = false;
   rect: Rectangle = { x1: 0, y1: 0, x2: 0, y2: 0, width: 0, height: 0 };
   lastMousePosition: Position = { x: 0, y: 0 };
   canvasPosition: Position = { x: 0, y: 0 };
@@ -273,6 +274,9 @@ showForm :boolean =  false;
           this.element.style.borderRadius = '3px';
           this.element.style.left = this.lastMousePosition.x + 'px';
           this.element.style.top = this.lastMousePosition.y + 'px';
+          console.log('elemenet coordinates', this.element);
+          console.log('last mouse position', this.lastMousePosition);
+          console.log('initial mouse', this.mousePosition);
         }
       }
 
@@ -329,7 +333,7 @@ showForm :boolean =  false;
                   .children[2].appendChild(rect);
                 this.highlightedTextFields.push(element);
                 this.extractedData.push(element.Text);
-                console.log('upadted array', this.element);
+                // console.log('upadted array', this.element);
               }
             }
           }
@@ -361,12 +365,23 @@ showForm :boolean =  false;
   }
 
   save() {
+    const coordinatesForDistance = {
+      xc: (this.rect.x2 - this.rect.x1) / this.pageCoordinates.width,
+      yc: (this.rect.y2 - this.rect.y1) / this.pageCoordinates.height
+    };
+    const distance =
+      (coordinatesForDistance.xc - 0.5) ** 2 +
+      (coordinatesForDistance.yc - 0.5) ** 2;
+    console.log('coordinates in ratios', coordinatesForDistance);
+
     this.areaInfo.push({
       rectangleId: this.element.id,
       pageNumber: this.dataPageNumber,
       rect: this.rect,
       isDelete: false
     });
+    console.log('final highleted', this.rect);
+
     this.showPopup = false;
     this.rect = { x1: 0, y1: 0, x2: 0, y2: 0, width: 0, height: 0 };
   }
@@ -405,14 +420,14 @@ showForm :boolean =  false;
 
   public onFileChange(event: any) {
     this.processsingData = true;
-    console.log('dict ------>', this.sampleDict[0]);
+    // console.log('dict ------>', this.sampleDict[0]);
     this.file = null;
     const files: File[] = event.target.files;
     if (files.length > 0) {
       this.file = files[0];
-      console.log('inital content', files);
+      // console.log('inital content', files);
 
-      console.log('file contents', this.file);
+      // console.log('file contents', this.file);
 
       this.filename = this.file.name;
       if (typeof FileReader !== 'undefined') {
@@ -435,11 +450,11 @@ showForm :boolean =  false;
         reader.readAsArrayBuffer(this.file);
 
         reader.onload = (e: any) => {
-          console.log('event', e);
+          // console.log('event', e);
 
           // console.log('in promise', reader.result);
           this.tobase64Data = this.arrayBufferToBase64(reader.result);
-          console.log('btoa', this.arrayBufferToBase64(reader.result));
+          // console.log('btoa', this.arrayBufferToBase64(reader.result));
           this.httpService
             .post(
               'https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/upload',
@@ -462,47 +477,33 @@ showForm :boolean =  false;
                   { headers, responseType: 'text' as 'json' }
                 )
                 .subscribe((asposConvertedData) => {
-                  console.log('response', asposConvertedData);
-                  this.httpService
-                    .post(
-                      'https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/download',
-                      {
-                        TemplateId: response.TemplateId,
-                        Type: 'Dictionary'
-                      },
-                      httpOptions
-                    )
-                    .pipe(retry(100))
-                    .subscribe((conversion: any) => {
-                      console.log('dict ---->', conversion);
-                      this.sampleDict = conversion.data;
-                      if (this.file.type === 'application/pdf') {
-                        this.isPdf = true;
-                        this.data = new Uint8Array(e.target.result);
-                        this.isDictDataLoaded = true;
-                        this.processsingData = false;
-                        this.showForm = true;
-                      } else {
-                        this.isPdf = false;
-                      }
-                    });
-                  // if (this.file.type === 'application/pdf') {
-                  //       this.isPdf = true;
-                  //       this.data = new Uint8Array(e.target.result);
-                  //       this.isDictDataLoaded = true;
-
-                  //     } else {
-                  //       this.isPdf = false;
-                  //     }
-
-                  //  error => {}   //this.handleAttachmentsInOfflineMode();
+                  // console.log('response', asposConvertedData);
+                  setTimeout(() => {
+                    this.httpService
+                      .post(
+                        'https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/download',
+                        {
+                          TemplateId: response.TemplateId,
+                          Type: 'Dictionary'
+                        },
+                        httpOptions
+                      )
+                      .pipe(retry(3))
+                      .subscribe((conversion: any) => {
+                        console.log('dict ---->', conversion);
+                        this.sampleDict = conversion.data;
+                        if (this.file.type === 'application/pdf') {
+                          this.isPdf = true;
+                          this.data = new Uint8Array(e.target.result);
+                          this.isDictDataLoaded = true;
+                          this.processsingData = false;
+                          this.showForm = true;
+                        } else {
+                          this.isPdf = false;
+                        }
+                      });
+                  }, 40000);
                 });
-
-              setTimeout(() => {
-                // to get dictionary
-                // after dictionary loaded hit the python api parameters => unique id
-                // the entities
-              }, 30000);
             });
         };
       }
