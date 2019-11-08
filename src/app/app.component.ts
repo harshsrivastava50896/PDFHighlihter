@@ -86,10 +86,14 @@ export class AppComponent {
   data: any = './assets/welocme_pdf.pdf';
   isDictDataLoaded = false;
   sampleDict: AreaInfo[] = json['default'];
-  sampleDictactedFields = ['Department', 'transfer'];
+  sampleDictactedFields = ['Seller', 'Buyer'];
   tobase64Data: any;
   processsingData = false;
-showForm :boolean =  false;
+  showForm: boolean = false;
+  showAddFieldForm: boolean = false;
+  newMergeFieldForm: boolean = false;
+  mergeFieldName: string = "";
+
   rect: Rectangle = { x1: 0, y1: 0, x2: 0, y2: 0, width: 0, height: 0 };
   lastMousePosition: Position = { x: 0, y: 0 };
   canvasPosition: Position = { x: 0, y: 0 };
@@ -232,7 +236,7 @@ showForm :boolean =  false;
             if (this.rect.width > 0 && this.rect.height > 0) {
               document
                 .getElementsByClassName('to-draw-rectangle')
-                [this.dataPageNumber - 1].appendChild(this.element);
+              [this.dataPageNumber - 1].appendChild(this.element);
             }
           }
         }
@@ -455,54 +459,45 @@ showForm :boolean =  false;
               );
               this.httpService
                 .get(
-                  'https://localhost:44382/api/DocConvert/Convert?id=' +
-                    response.TemplateId +
-                    '/' +
-                    this.filename,
+                  'http://fai-blr02s1136:8090/api/DocConvert/Convert?id=' +
+                  response.TemplateId +
+                  '/' +
+                  this.filename,
                   { headers, responseType: 'text' as 'json' }
                 )
                 .subscribe((asposConvertedData) => {
                   console.log('response', asposConvertedData);
-                  this.httpService
-                    .post(
-                      'https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/download',
-                      {
-                        TemplateId: response.TemplateId,
-                        Type: 'Dictionary'
-                      },
-                      httpOptions
-                    )
-                    .pipe(retry(100))
-                    .subscribe((conversion: any) => {
-                      console.log('dict ---->', conversion);
-                      this.sampleDict = conversion.data;
-                      if (this.file.type === 'application/pdf') {
-                        this.isPdf = true;
-                        this.data = new Uint8Array(e.target.result);
-                        this.isDictDataLoaded = true;
-                        this.processsingData = false;
-                        this.showForm = true;
-                      } else {
-                        this.isPdf = false;
-                      }
-                    });
-                  // if (this.file.type === 'application/pdf') {
-                  //       this.isPdf = true;
-                  //       this.data = new Uint8Array(e.target.result);
-                  //       this.isDictDataLoaded = true;
+                  setTimeout(() => {
+                    this.httpService
+                      .post(
+                        'https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/download',
+                        {
+                          TemplateId: response.TemplateId,
+                          Type: 'Dictionary'
+                        },
+                        httpOptions
+                      ).pipe(retry(3))
+                      .subscribe((conversion: any) => {
+                        console.log('dict ---->', conversion);
+                        this.httpService.get('https://y6hl1i714a.execute-api.us-east-1.amazonaws.com/test/ML?id=' + response.TemplateId).subscribe((pythonResponse: any[]) => {
+                          this.sampleDict = conversion.data;
+                          // this.sampleDictactedFields = pythonResponse.filter(x => x.)
+                          if (this.file.type === 'application/pdf') {
+                            this.setpixels();
+                            this.isPdf = true;
+                            this.data = new Uint8Array(e.target.result);
+                            this.isDictDataLoaded = true;
+                            this.processsingData = false;
+                            this.showForm = true;
+                            this.showAddFieldForm = true;
+                          } else {
+                            this.isPdf = false;
+                          }
+                        })
 
-                  //     } else {
-                  //       this.isPdf = false;
-                  //     }
-
-                  //  error => {}   //this.handleAttachmentsInOfflineMode();
-                });
-
-              setTimeout(() => {
-                // to get dictionary
-                // after dictionary loaded hit the python api parameters => unique id
-                // the entities
-              }, 30000);
+                      });
+                  }, 40000);
+                }); 
             });
         };
       }
@@ -516,6 +511,18 @@ showForm :boolean =  false;
       binary += String.fromCharCode(bytes[i]);
     }
     return window.btoa(binary);
+  }
+
+  addMergeField() {
+    this.newMergeFieldForm = true;
+  }
+  addFieldToForm() {
+    this.areaInfoInPixels.forEach(x => {
+      if (x.Text == this.mergeFieldName) {
+
+      }
+    })
+    this.extractedData.push(this.mergeFieldName);
   }
 }
 

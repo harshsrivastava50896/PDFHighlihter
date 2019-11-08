@@ -1,7 +1,7 @@
 <div class="container">
   <div class="container__left-side">
     <div class="header">
-      <h2>Angular PDF highlighter</h2>
+      <h2>Template Generator</h2>
 
     </div>
     <div class="list">
@@ -88,10 +88,18 @@
         <br />
         <br />
       </div>
+      <button *ngIf="showAddFieldForm" (click)="addMergeField()" class="form-spacing" type="button">
+        Add New Merge Field
+      </button>
+
       <button *ngIf="showForm" (click)="postData()" class="form-spacing" type="button">
         Submit
       </button>
     </form>
+    <div *ngIf="newMergeFieldForm" class="">
+      <input [(ngModel)]="mergeFieldName">
+      <button (click)="addFieldToForm">Confirm</button>
+    </div>
   </div>
 </div>
 
