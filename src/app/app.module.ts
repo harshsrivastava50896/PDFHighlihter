@@ -7,11 +7,15 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { FormAdminComponent } from './form-admin/form-admin/form-admin.component';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { HttpClientModule } from "@angular/common/http";
+import { AdminComponent } from './admin/admin.component';
+import { UserComponent } from './user/user.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     FormAdminComponent,
+    AdminComponent,
+    UserComponent,
   ],
   imports: [
 BrowserModule,
