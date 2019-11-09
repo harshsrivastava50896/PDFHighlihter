@@ -148,18 +148,30 @@
     </div>
   </div>
   <div class="uk-flex uk-flex-right uk-button-small">
-    <button class="uk-button uk-button-primary uk-background-primary uk-button-small">Add Row</button>
+    <button class="uk-button uk-button-primary uk-background-primary uk-button-small" uk-toggle="target: #toggle-usage">Add Row</button>
   </div>
+  <fieldset class="uk-fieldset" hidden id="toggle-usage">
+    <div class="uk-margin uk-width-1-1">
+      <input class="uk-input uk-width-1-3 uk-margin-small-right" type="text" placeholder="Input">
+      <select class="uk-select uk-width-1-3">
+        <option>Option 01</option>
+        <option>Option 02</option>
+      </select>
+      <span class="uk-margin-small-right uk-margin-left" uk-icon="check"></span>
+      <span class="uk-margin-small-right"  uk-toggle="target: #toggle-usage" uk-icon="close"></span>
+
+    </div>
+  </fieldset>
   <table class="uk-table uk-table-small uk-margin-remove">
     <thead>
-      <tr >
-        <th>Table Heading</th>
-        <th>Table Heading</th>
+      <tr>
+        <th>TEXT</th>
+        <th>MERGE FIELD NAME</th>
         <th></th>
       </tr>
     </thead>
     <tbody>
-      <tr  *ngFor="let data of extractedData; let i = index">
+      <tr *ngFor="let data of extractedData; let i = index">
         <td>{{data}}</td>
         <td>
           <select class="uk-select uk-form-small">
@@ -171,9 +183,9 @@
       </tr>
     </tbody>
   </table>
-  <div class="uk-flex uk-flex-right uk-button-small uk-margin-small-top">
+  <!-- <div class="uk-flex uk-flex-right uk-button-small uk-margin-small-top">
     <button class="uk-button uk-button-primary uk-background-primary uk-button-small">Add Row</button>
-  </div>
+  </div> -->
   <ul class="uk-list uk-list-striped uk-margin-top">
     <li><a href="#">List item 1</a></li>
     <li><a href="#" class="active">List item 1</a></li>
