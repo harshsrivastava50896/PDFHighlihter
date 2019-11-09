@@ -13,9 +13,10 @@ import * as json from "../assets/sample3.json";
 import { NgxSpinnerService } from "ngx-spinner";
 import { PDFDocumentProxy } from "pdfjs-dist";
 import { toBase64String } from "@angular/compiler/src/output/source_map";
-import { catchError, retry } from "rxjs/operators";
-import { Observable } from "rxjs";
+import { catchError, retry, retryWhen, delay, mergeMap } from "rxjs/operators";
+import { Observable, throwError, of } from "rxjs";
 import { MergeFieldGeneratorService } from "./merge-field-generator.service.js";
+
 const httpOptions = {
   headers: new HttpHeaders({
     "Content-Type": "application/json"
@@ -45,7 +46,7 @@ export class AppComponent {
       console.log("area gage", this.pageCoordinates);
     }, 1000);
 
-     
+
   }
   adminForm: FormGroup;
   myData = ["Date", "Text", "ss"];
@@ -157,7 +158,7 @@ export class AppComponent {
   setpixels() {
     this.areaInfoInPixels = [] = [];
     this.sampleDict.forEach(x => {
-      const areaCooradinate: AreaInfo = new AreaInfo();
+      let areaCooradinate: AreaInfo = new AreaInfo();
       areaCooradinate.rect.height = x.rect.height * this.pageCoordinates.height;
       areaCooradinate.rect.width = x.rect.width * this.pageCoordinates.width;
       areaCooradinate.rect.x1 = x.rect.x1 * this.pageCoordinates.width;
@@ -168,9 +169,10 @@ export class AppComponent {
       areaCooradinate.Text = x.Text;
       areaCooradinate.Id = x.Id;
       areaCooradinate.rectangleId = x.Id;
+      areaCooradinate.distance = x.distance;
       this.areaInfoInPixels.push(areaCooradinate);
     });
-    
+
     console.log("Area Info in pixels", this.areaInfoInPixels);
     console.log("extracted text", this.extractedData);
   }
@@ -200,7 +202,7 @@ export class AppComponent {
             if (this.rect.width > 0 && this.rect.height > 0) {
               document
                 .getElementsByClassName("to-draw-rectangle")
-                [this.dataPageNumber - 1].appendChild(this.element);
+              [this.dataPageNumber - 1].appendChild(this.element);
             }
           }
         }
@@ -241,9 +243,9 @@ export class AppComponent {
           this.element.style.borderRadius = "3px";
           this.element.style.left = this.lastMousePosition.x + "px";
           this.element.style.top = this.lastMousePosition.y + "px";
-          console.log("elemenet coordinates", this.element);
-          console.log("last mouse position", this.lastMousePosition);
-          console.log("initial mouse", this.mousePosition);
+          // console.log("elemenet coordinates", this.element);
+          // console.log("last mouse position", this.lastMousePosition);
+          // console.log("initial mouse", this.mousePosition);
         }
       }
 
@@ -332,22 +334,34 @@ export class AppComponent {
   }
 
   save() {
-    const coordinatesForDistance = {
-      xc: ((this.rect.x2 + this.rect.x1)/2) / this.pageCoordinates.width,
-      yc: ((this.rect.y2 + this.rect.y1)/2) / this.pageCoordinates.height
-    };
-    const distance =
-      (coordinatesForDistance.xc - 0.5) ** 2 +
-      (coordinatesForDistance.yc - 0.5) ** 2;
-    console.log("coordinates in ratios", coordinatesForDistance);
-
+    // let centerPoint = {
+    //   xc: ((this.rect.x2 + this.rect.x1)/2) / this.pageCoordinates.width,
+    //   yc: ((this.rect.y2 + this.rect.y1)/2) / this.pageCoordinates.height
+    // };
+    // let distance =
+    //   (centerPoint.xc - 0.5) ** 2 +
+    //   (centerPoint.yc - 0.5) ** 2;
+    // var minumunDistanceArray =[];
+    // this.sampleDict.forEach(x => {minumunDistanceArray.push((distance - x.distance))});
+    // let index = minumunDistanceArray.indexOf(Math.min(...minumunDistanceArray));
+    // console.log('minimum distance array',minumunDistanceArray);
+    // console.log("distance calculated", distance);
+    // console.log('Minimum value is', Math.min(...minumunDistanceArray));
+    // console.log('text found is ', this.sampleDict[index].Text);
+    this.areaInfoInPixels.forEach(x => {
+      if (this.findRect(x, this.rect)) {
+        console.log('Threshold', this.rect);
+        console.log('word coordinates', x);
+        console.log(x.Text)
+      }
+    })
     this.areaInfo.push({
       rectangleId: this.element.id,
       pageNumber: this.dataPageNumber,
       rect: this.rect,
-      isDelete: false
+      isDelete: false,
+      distance: 0
     });
-    console.log("final highleted", this.rect);
 
     this.showPopup = false;
     this.rect = { x1: 0, y1: 0, x2: 0, y2: 0, width: 0, height: 0 };
@@ -433,43 +447,44 @@ export class AppComponent {
                 "Content-Type",
                 "text/plain; charset=utf-8"
               );
-              this.httpService
-                .get(
-                  "http://fai-blr02s1136:8090/api/DocConvert/Convert?id=" +
-                    response.TemplateId +
-                    "/" +
-                    this.filename,
-                  { headers, responseType: "text" as "json" }
-                )
-                .subscribe(asposConvertedData => {
-                  // console.log('response', asposConvertedData);
-                  setTimeout(() => {
-                    this.apiService
-                      .getDictionaryDetails(response.TemplateId)
-                      .subscribe((conversion: any) => {
-                        console.log("dict ---->", conversion);
-                        this.sampleDict = conversion.data;
-                        this.setpixels();
-                        // this.httpService
-                        //   .get(
-                        //     "https://y6hl1i714a.execute-api.us-east-1.amazonaws.com/test/ML?id=" +
-                        //       response.TemplateId
-                        //   )
-                        //   .subscribe((pythonResponse: any) => {
-                        //     console.log("python reponse", pythonResponse);
-                        //   });
-                        if (this.file.type === "application/pdf") {
-                          this.isPdf = true;
-                          this.data = new Uint8Array(e.target.result);
-                          this.isDictDataLoaded = true;
-                          this.processsingData = false;
-                          this.showForm = true;
-                        } else {
-                          this.isPdf = false;
-                        }
-                      });
-                  }, 40000);
-                });
+              setTimeout(() => {
+                this.apiService
+                  .getDictionaryDetails(response.TemplateId).pipe(this.delayedRetry(10000, 5))
+                  .subscribe((conversion: any) => {
+                    console.log("dict ---->", conversion);
+                    this.sampleDict = conversion.data;
+                    this.setpixels();
+                    // this.httpService
+                    //   .get(
+                    //     "https://y6hl1i714a.execute-api.us-east-1.amazonaws.com/test/ML?id=" +
+                    //       response.TemplateId
+                    //   )
+                    //   .subscribe((pythonResponse: any) => {
+                    //     console.log("python reponse", pythonResponse);
+                    //   });
+                    if (this.file.type === "application/pdf") {
+                      this.isPdf = true;
+                      this.data = new Uint8Array(e.target.result);
+                      this.isDictDataLoaded = true;
+                      this.processsingData = false;
+                      this.showForm = true;
+                    } else {
+                      this.isPdf = false;
+                    }
+                  });
+              }, 40000);
+              // this.httpService
+              //   .get(
+              //     "http://fai-blr02s1136:8090/api/DocConvert/Convert?id=" +
+              //       response.TemplateId +
+              //       "/" +
+              //       this.filename,
+              //     { headers, responseType: "text" as "json" }
+              //   )
+              //   .subscribe(asposConvertedData => {
+              //     // console.log('response', asposConvertedData);
+
+              //   });
             });
         };
       }
@@ -495,6 +510,32 @@ export class AppComponent {
     });
     this.extractedData.push(this.mergeFieldName);
   }
+  delayedRetry(delayMs: number, maxRetry = 5) {
+    let retries = maxRetry;
+    return (src: Observable<any>) => src.pipe(retryWhen((errors: Observable<any>) => errors.pipe(
+      delay(delayMs), mergeMap(error => retries-- > 0 ? of(error) : throwError('giving up'))
+    )))
+  }
+
+  findRect(word: AreaInfo, threshold: Rectangle) {
+    if (word.rect.x1 < threshold.x1 || word.rect.x1 > threshold.x2) {
+
+      return false;
+    }
+    if (word.rect.x2 < threshold.x1 || word.rect.x2 > threshold.x2) {
+
+      return false;
+    }
+    if (word.rect.y1 < threshold.y1 || word.rect.y1 > threshold.y2) {
+
+      return false;
+    }
+    if (word.rect.y2 < threshold.y1 || word.rect.y2 > threshold.y2) {
+
+      return false;
+    }
+    return true;
+  }
 }
 
 class Position {
@@ -517,7 +558,7 @@ class AreaInfo {
   rect: Rectangle = new Rectangle();
   isDelete?: boolean;
   Text?: string;
-
+  distance: number;
   Id?: string;
 }
 class PagePixels {

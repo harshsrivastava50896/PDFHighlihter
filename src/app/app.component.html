@@ -1,4 +1,4 @@
-<div class="container">
+<!-- <div class="container">
   <div class="container__left-side">
     <div class="header">
       <h2>Template Generator</h2>
@@ -108,4 +108,125 @@
     <i class="material-icons icon icon-apply" (click)="save()">check_box</i>
     <i class="material-icons icon icon-close" (click)="cancel()">close</i>
   </div>
+</div> -->
+
+
+
+
+
+<!--HEADER-->
+<header id="top-head" class="uk-position-fixed">
+  <div class="uk-container uk-container-expand uk-background-primary">
+    <nav class="uk-navbar uk-light" data-uk-navbar="mode:click; duration: 250">
+      <div class="uk-navbar-left">
+        <div class="uk-navbar-item">
+          <a class="uk-logo" href="#"><img class="custom-logo" src="assets/dashboard-logo.svg" alt=""></a>
+        </div>
+      </div>
+      <div class="uk-navbar-right">
+        <ul class="uk-navbar-nav">
+          <li><a href="#" data-uk-icon="icon:user" title="Your profile" data-uk-tooltip></a></li>
+          <li><a href="#" data-uk-icon="icon: settings" title="Settings" data-uk-tooltip></a></li>
+          <li><a href="#" data-uk-icon="icon:  sign-out" title="Sign Out" data-uk-tooltip></a></li>
+          <li><a class="uk-navbar-toggle" data-uk-toggle data-uk-navbar-toggle-icon href="#offcanvas-nav"
+              title="Offcanvas" data-uk-tooltip></a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</header>
+<!--/HEADER-->
+<!-- LEFT BAR -->
+<aside id="left-col" class="uk-light uk-visible@m">
+  <div class="left-logo uk-flex uk-flex-middle uk-flex-center uk-margin">
+    <img class="custom-logo" src="assets/dashboard-logo2.svg" alt="">
+  </div>
+  <div class="uk-margin uk-flex uk-flex-center">
+    <div uk-form-custom>
+      <input (change)="onFileChange($event)" type="file">
+      <button class="uk-button uk-button-default uk-button-small" type="button" tabindex="-1">Select PDF</button>
+    </div>
+  </div>
+  <div class="uk-flex uk-flex-right uk-button-small">
+    <button class="uk-button uk-button-primary uk-background-primary uk-button-small">Add Row</button>
+  </div>
+  <table class="uk-table uk-table-small uk-margin-remove">
+    <thead>
+      <tr >
+        <th>Table Heading</th>
+        <th>Table Heading</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr  *ngFor="let data of extractedData; let i = index">
+        <td>{{data}}</td>
+        <td>
+          <select class="uk-select uk-form-small">
+            <option>Option 01</option>
+            <option>Option 02</option>
+          </select>
+        </td>
+        <td><span uk-icon="close"></span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="uk-flex uk-flex-right uk-button-small uk-margin-small-top">
+    <button class="uk-button uk-button-primary uk-background-primary uk-button-small">Add Row</button>
+  </div>
+  <ul class="uk-list uk-list-striped uk-margin-top">
+    <li><a href="#">List item 1</a></li>
+    <li><a href="#" class="active">List item 1</a></li>
+    <li><a href="#">List item 1</a></li>
+  </ul>
+</aside>
+<!-- /LEFT BAR -->
+<!-- CONTENT -->
+<div id="content">
+  <div class="uk-container uk-container-expand" (mousemove)="mouseEvent($event)" (mousedown)="mouseEvent($event)"
+    (mouseup)="mouseEvent($event)" data-uk-height-viewport="expand: true">
+    <pdf-viewer [original-size]="false" (window:resize)="onResize($event)" [src]="data" id="foo" [show-all]="true"
+      [render-text]="true" [autoresize]="true" (page-rendered)="pageRendered($event)" style="display: block;">
+    </pdf-viewer>
+  </div>
+  <footer class="uk-section uk-section-small uk-text-center">
+    <hr>
+    <p class="uk-text-small uk-text-center">Copyright 2019 - First American </p>
+  </footer>
 </div>
+<!-- /CONTENT -->
+<!-- OFFCANVAS -->
+<div id="offcanvas-nav" data-uk-offcanvas="flip: true; overlay: true">
+  <div class="uk-offcanvas-bar uk-offcanvas-bar-animation uk-offcanvas-slide">
+    <button class="uk-offcanvas-close uk-close uk-icon" type="button" data-uk-close></button>
+    <ul class="uk-nav uk-nav-default">
+      <li class="uk-active"><a href="#">Active</a></li>
+      <li class="uk-parent">
+        <a href="#">Parent</a>
+        <ul class="uk-nav-sub">
+          <li><a href="#">Sub item</a></li>
+          <li><a href="#">Sub item</a></li>
+        </ul>
+      </li>
+      <li class="uk-nav-header">Header</li>
+      <li><a href="#js-options"><span class="uk-margin-small-right uk-icon" data-uk-icon="icon: table"></span>
+          Item</a></li>
+      <li><a href="#"><span class="uk-margin-small-right uk-icon" data-uk-icon="icon: thumbnails"></span> Item</a>
+      </li>
+      <li class="uk-nav-divider"></li>
+      <li><a href="#"><span class="uk-margin-small-right uk-icon" data-uk-icon="icon: trash"></span> Item</a></li>
+    </ul>
+    <h3>Title</h3>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+      magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+      consequat.</p>
+  </div>
+</div>
+<!-- /OFFCANVAS -->
+<div class="js-popper popper" [style.display]="getStyle()">
+  <div class="icons">
+    <i class="material-icons icon icon-apply" (click)="save()">check_box</i>
+    <i class="material-icons icon icon-close" (click)="cancel()">close</i>
+  </div>
+</div>
+<!-- JS FILES -->
