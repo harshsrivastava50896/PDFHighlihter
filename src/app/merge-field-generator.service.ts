@@ -10,7 +10,7 @@ const httpOptions = {
   providedIn: 'root'
 })
 export class MergeFieldGeneratorService {
-  constructor(private httpService: HttpClient) {}
+  constructor(private httpService: HttpClient) { }
 
   getDictionaryDetails(templateId: any): Observable<any> {
     return this.httpService.post(
@@ -21,5 +21,8 @@ export class MergeFieldGeneratorService {
       },
       httpOptions
     );
+  }
+  getMergeFieldsNames():Observable<any> {
+    return this.httpService.get('https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/dynamodbactivity/sourceDetails');
   }
 }
