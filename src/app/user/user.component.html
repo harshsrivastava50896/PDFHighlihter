@@ -1,3 +1,59 @@
-<p>
-  user works!
-</p>
+<header id="top-head" class="uk-position-fixed">
+  <div class="uk-container uk-container-expand uk-background-primary">
+    <nav class="uk-navbar uk-light" data-uk-navbar="mode:click; duration: 250">
+      <div class="uk-navbar-left">
+        <div class="uk-navbar-item">
+          <a class="uk-logo" href="#"><img class="custom-logo" src="assets/dashboard-logo.svg" alt=""></a>
+        </div>
+      </div>
+      <div class="uk-navbar-right">
+        <ul class="uk-navbar-nav">
+          <li><a href="#" data-uk-icon="icon:user" title="Your profile" data-uk-tooltip></a></li>
+          <li><a href="#" data-uk-icon="icon: settings" title="Settings" data-uk-tooltip></a></li>
+          <li><a href="#" data-uk-icon="icon:  sign-out" title="Sign Out" data-uk-tooltip></a></li>
+          <li><a class="uk-navbar-toggle" data-uk-toggle data-uk-navbar-toggle-icon href="#offcanvas-nav"
+              title="Offcanvas" data-uk-tooltip></a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</header>
+<!--/HEADER-->
+<!-- LEFT BAR -->
+<aside id="left-col" class="uk-light uk-visible@m uk-animation-slide-left">
+  <div class="left-logo uk-flex uk-flex-middle uk-flex-center uk-margin">
+    <img class="custom-logo" src="assets/dashboard-logo2.svg" alt="">
+  </div>
+  <div class="uk-margin uk-flex uk-flex-center">
+    <div uk-form-custom>
+      <input (change)="onFileChange($event)" type="file">
+      <button class="uk-button uk-button-default uk-button-small" type="button" tabindex="-1">Your Templates</button>
+    </div>
+  </div>
+  <div *ngIf="(spinner == true)">
+    <div  uk-spinner></div>
+  </div>
+ 
+  
+  <form  [formGroup]="form" (ngSubmit)="submit()">
+    <label class="uk-width-1-1 nm uk-text-primary uk-text-uppercase" formArrayName="orders" *ngFor="let order of form.controls.orders.controls; let i = index">
+      <input type="checkbox" [formControlName]="i">
+      {{ordersData[i].TemplateName}}
+    </label>
+  
+    <div *ngIf="!form.valid">At least one order must be selected</div>
+    <br>
+    <button class="uk-button uk-button-primary uk-margin-bottom uk-margin-right uk-margin-top">Generate Template</button>
+  </form>
+</aside>
+<div id="content">
+  <div class="uk-container uk-container-expand" (mousemove)="mouseEvent($event)" (mousedown)="mouseEvent($event)"
+    (mouseup)="mouseEvent($event)" data-uk-height-viewport="expand: true">
+    <div id="contentdevere"></div>
+  </div>
+  <footer class="uk-section uk-section-small uk-text-center">
+    <hr>
+    <p class="uk-text-small uk-text-center">Copyright 2019 - First American </p>
+  </footer>
+</div>
+
