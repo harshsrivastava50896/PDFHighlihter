@@ -22,4 +22,7 @@ export class MergeFieldGeneratorService {
       httpOptions
     );
   }
+  getMergeFieldsNames():Observable<any> {
+    return this.httpService.get('https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/dynamodbactivity/sourceDetails');
+  }
 }

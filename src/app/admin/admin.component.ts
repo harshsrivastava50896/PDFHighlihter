@@ -7,7 +7,7 @@ import {
   Validators,
   FormControl
 } from "@angular/forms";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpErrorResponse } from "@angular/common/http";
 import { THIS_EXPR, ThrowStmt } from "@angular/compiler/src/output/output_ast";
 import * as json from "../../assets/sample3.json";
 import { NgxSpinnerService } from "ngx-spinner";
@@ -15,7 +15,9 @@ import { PDFDocumentProxy } from "pdfjs-dist";
 import { toBase64String } from "@angular/compiler/src/output/source_map";
 import { catchError, retry, retryWhen, delay, mergeMap } from "rxjs/operators";
 import { Observable, throwError, of } from "rxjs";
-import { MergeFieldGeneratorService } from "../../app/merge-field-generator.service";
+import { MergeFieldsNames } from './../Models/MergeFieldsNames';
+import { MergeFieldGeneratorService } from './../merge-field-generator.service';
+import { saveAs } from "file-saver";
 const httpOptions = {
   headers: new HttpHeaders({
     "Content-Type": "application/json"
@@ -59,13 +61,14 @@ export class AdminComponent implements OnInit {
   data: any = "./assets/welocme_pdf.pdf";
   isDictDataLoaded = false;
   sampleDict: AreaInfo[] = json["default"];
-  sampleDictactedFields = ["Seller", "Buyer"];
+  sampleDictactedFields = [];
   tobase64Data: any;
   processsingData = false;
   showForm: boolean = false;
   showAddFieldForm: boolean = false;
   newMergeFieldForm: boolean = false;
   mergeFieldName: string = "";
+  templateId = "";
 
   rect: Rectangle = { x1: 0, y1: 0, x2: 0, y2: 0, width: 0, height: 0 };
   lastMousePosition: Position = { x: 0, y: 0 };
@@ -99,8 +102,12 @@ export class AdminComponent implements OnInit {
   type_field: string[];
   radio_type: string[];
   showPopup = false;
-  extractedData: string[] = [];
+  extractedData: postDataModel[] = [];
   listRectangleId = "";
+  mergeFieldTypes: MergeFieldsNames[] = [];
+  blankFieldCount: number = 0;
+
+
 
   ngOnInit() {
     this.mergefieldstring = [];
@@ -112,6 +119,10 @@ export class AdminComponent implements OnInit {
       typeOfField: ["", Validators.required],
       radioButton: ["", Validators.required]
     });
+    this.apiService.getMergeFieldsNames().subscribe(fields => {
+      this.mergeFieldTypes = fields;
+    })
+
   }
   onResize(event) {
     this.setpixels();
@@ -119,19 +130,38 @@ export class AdminComponent implements OnInit {
     console.log("area info", image.getBoundingClientRect());
   }
   postData() {
-    // model.highlighted_text = null;
-    // model.merged_field
+    console.log(this.extractedData);
+    this.extractedData.forEach(x => {
+      x.entityType = x.mergeFieldIdentifier;
+    });
 
-    console.log(this.mergefieldstring);
-    for (let i = 0; i < this.mergefieldstring.length; i++) {
-      const model: postDataModel = new postDataModel();
-      model.highlighted_text = this.extractedData[i];
-      model.merged_field = this.mergefieldstring[i];
-      model.raidof_ield = this.radio_type[i];
-      model.type_of_field = this.type_field[i];
-      this.postDataModel.push(model);
-    }
-    console.log(this.postDataModel);
+    this.httpService.post('https://localhost:44382/api/PDFUtil/AddMergeFields?docId=' + this.templateId, { MergeFields: this.extractedData }).subscribe((dataRecived: any) => {
+      console.log('data got', dataRecived);
+      let headers: HttpHeaders = new HttpHeaders();
+      headers = headers.append('Content-Type', 'application/octect-stream');
+      headers = headers.append('ResponseType', 'application/json');
+      headers.append("Access-Control-Allow-Headers", "Content-Type,X-Amz-Date,Authorization,X-Api-Key");
+      headers.append("Access-Control-Allow-Origin", "http://localhost:4200"); // Remove this and add s3 URL after deploy
+      headers.append("Access-Control-Allow-Methods", "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT");
+
+      let headersForTemplate: HttpHeaders = new HttpHeaders();
+      headersForTemplate.append("Access-Control-Allow-Headers", "Content-Type,X-Amz-Date,Authorization,X-Api-Key");
+      headersForTemplate.append("Access-Control-Allow-Origin", "http://localhost:4200"); // Remove this and add s3 URL after deploy
+      headersForTemplate.append("Access-Control-Allow-Methods", "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT");
+      this.httpService.post('https://s7qljl48a0.execute-api.us-east-1.amazonaws.com/test/generatetemplate?id=' + this.templateId, null, { headers: headersForTemplate }).subscribe(dataRecived => {
+
+        this.httpService.post<any>('https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/download', {
+          "TemplateId": this.templateId,
+          "Type": "TemplateDocx"
+        }, { headers: headers, }).subscribe((response: any) => {
+          console.log('response', response.data);
+          const bytes = new Uint8Array(response.data);
+          var blob = new Blob([bytes], { type: 'application/octet-stream' });
+          saveAs(blob, "wokingdownload.docx");
+        })
+      })
+
+    })
   }
   fieldtype(event) {
     let Event = event.target.value;
@@ -139,7 +169,6 @@ export class AdminComponent implements OnInit {
       if (Event != null) {
         this.type_field.push(Event);
       }
-
       Event = null;
     }
     console.log(this.type_field);
@@ -301,7 +330,10 @@ export class AdminComponent implements OnInit {
                   .find(p => p.className == "page")
                   .children[2].appendChild(rect);
                 this.highlightedTextFields.push(element);
-                this.extractedData.push(element.Text);
+                // this.extractedData.push(new postDataModel(element.Id, element.rect.x1, element.rect.x2, element.rect.y1, element.rect.y2, this.pageCoordinates.height,
+                //    this.pageCoordinates.width, element.Text, x.label == 'Buyer'?'BuyerName':'SellerName', "", false, x.label == 'Buyer'?'BuyerName':'SellerName'));
+                   this.extractedData.push(new postDataModel(element.Id, element.rect.x1, element.rect.x2, element.rect.y1, element.rect.y2, this.pageCoordinates.height,
+                    this.pageCoordinates.width, element.Text,"", "", false, ""));
                 // console.log('upadted array', this.element);
               }
             }
@@ -334,27 +366,21 @@ export class AdminComponent implements OnInit {
   }
 
   save() {
-    // let centerPoint = {
-    //   xc: ((this.rect.x2 + this.rect.x1)/2) / this.pageCoordinates.width,
-    //   yc: ((this.rect.y2 + this.rect.y1)/2) / this.pageCoordinates.height
-    // };
-    // let distance =
-    //   (centerPoint.xc - 0.5) ** 2 +
-    //   (centerPoint.yc - 0.5) ** 2;
-    // var minumunDistanceArray =[];
-    // this.sampleDict.forEach(x => {minumunDistanceArray.push((distance - x.distance))});
-    // let index = minumunDistanceArray.indexOf(Math.min(...minumunDistanceArray));
-    // console.log('minimum distance array',minumunDistanceArray);
-    // console.log("distance calculated", distance);
-    // console.log('Minimum value is', Math.min(...minumunDistanceArray));
-    // console.log('text found is ', this.sampleDict[index].Text);
+
+    var concatTedFields = "";
     this.areaInfoInPixels.forEach(x => {
       if (this.findRect(x, this.rect)) {
         console.log('Threshold', this.rect);
         console.log('word coordinates', x);
         console.log(x.Text)
+        concatTedFields = concatTedFields + " " + x.Text
       }
     })
+    if (concatTedFields == "") {
+      this.extractedData.push(new postDataModel(this.element.id, this.rect.x1, this.rect.x2, this.rect.y1, this.rect.y2, this.pageCoordinates.height, this.pageCoordinates.width, 'BlankField_' + this.blankFieldCount.toString(), "", "", true, ""));
+      this.blankFieldCount++;
+    }
+    else { this.extractedData.push(new postDataModel(this.element.id, this.rect.x1, this.rect.x2, this.rect.y1, this.rect.y2, this.pageCoordinates.height, this.pageCoordinates.width, concatTedFields, "", "", false, "")); }
     this.areaInfo.push({
       rectangleId: this.element.id,
       pageNumber: this.dataPageNumber,
@@ -362,7 +388,6 @@ export class AdminComponent implements OnInit {
       isDelete: false,
       distance: 0
     });
-
     this.showPopup = false;
     this.rect = { x1: 0, y1: 0, x2: 0, y2: 0, width: 0, height: 0 };
   }
@@ -379,7 +404,7 @@ export class AdminComponent implements OnInit {
     this.areaInfo.find(f => f.rectangleId === list.rectangleId).isDelete = true;
     this.areaInfo = this.areaInfo.filter(f => f.isDelete === false);
   }
-  moveTo(list: AreaInfo) {
+  moveTo(list: string) {
     if (this.listRectangleId != "") {
       if (document.getElementById(this.listRectangleId)) {
         document.getElementById(this.listRectangleId).style.background =
@@ -387,53 +412,31 @@ export class AdminComponent implements OnInit {
         document.getElementById(this.listRectangleId).style.opacity = "1";
       }
     }
-    if (this.listRectangleId !== list.rectangleId) {
+    if (this.listRectangleId !== list) {
       document
-        .getElementById(list.rectangleId)
-        .scrollIntoView({ block: "start", behavior: "smooth" });
-      document.getElementById(list.rectangleId).style.background = "red";
-      document.getElementById(list.rectangleId).style.opacity = "0.4";
-      this.listRectangleId = list.rectangleId;
+        .getElementById(list)
+        .scrollIntoView({
+          behavior: "smooth", block: 'center',
+          inline: 'center'
+        });
+      document.getElementById(list).style.background = "red";
+      document.getElementById(list).style.opacity = "0.4";
+      this.listRectangleId = list;
     }
   }
 
   public onFileChange(event: any) {
     this.processsingData = true;
-    // console.log('dict ------>', this.sampleDict[0]);
     this.file = null;
     const files: File[] = event.target.files;
     if (files.length > 0) {
       this.file = files[0];
-      // console.log('inital content', files);
-
-      // console.log('file contents', this.file);
-
       this.filename = this.file.name;
       if (typeof FileReader !== "undefined") {
         const reader = new FileReader();
-        const formData = new FormData();
-        // formData.append('file', this.tobase64Data, this.filename);
-
-        // reader.onloadend = (e: any) => {
-        //   if (this.file.type === 'application/pdf') {
-        //     this.isPdf = true;
-        //     this.data = new Uint8Array(e.target.result);
-        //     this.isDictDataLoaded = true;
-
-        //   } else {
-        //     this.isPdf = false;
-        //   }
-        //   // this.handleAttachmentsInOfflineMode();
-        // };
-
         reader.readAsArrayBuffer(this.file);
-
         reader.onload = (e: any) => {
-          // console.log('event', e);
-
-          // console.log('in promise', reader.result);
           this.tobase64Data = this.arrayBufferToBase64(reader.result);
-          // console.log('btoa', this.arrayBufferToBase64(reader.result));
           this.httpService
             .post(
               "https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/upload",
@@ -441,50 +444,44 @@ export class AdminComponent implements OnInit {
               httpOptions
             )
             .subscribe((response: any) => {
-              // the internal call for docx
-
-              const headers = new HttpHeaders().set(
-                "Content-Type",
-                "text/plain; charset=utf-8"
-              );
+              this.templateId = response.TemplateId
               setTimeout(() => {
                 this.apiService
-                  .getDictionaryDetails(response.TemplateId).pipe(this.delayedRetry(10000, 5))
+                  .getDictionaryDetails(response.TemplateId).pipe(this.delayedRetry(10000, 8))
                   .subscribe((conversion: any) => {
                     console.log("dict ---->", conversion);
                     this.sampleDict = conversion.data;
+                    setTimeout(() => {
+                    }, 2000);
                     this.setpixels();
-                    // this.httpService
-                    //   .get(
-                    //     "https://y6hl1i714a.execute-api.us-east-1.amazonaws.com/test/ML?id=" +
-                    //       response.TemplateId
-                    //   )
-                    //   .subscribe((pythonResponse: any) => {
-                    //     console.log("python reponse", pythonResponse);
-                    //   });
-                    if (this.file.type === "application/pdf") {
-                      this.isPdf = true;
-                      this.data = new Uint8Array(e.target.result);
-                      this.isDictDataLoaded = true;
-                      this.processsingData = false;
-                      this.showForm = true;
-                    } else {
-                      this.isPdf = false;
-                    }
+                    this.httpService
+                      .get(
+                        "https://y6hl1i714a.execute-api.us-east-1.amazonaws.com/test/ML?id=" +
+                        response.TemplateId
+                      ).pipe(this.delayedRetry(5000, 8))
+                      .subscribe((pythonResponse: any[]) => {
+                        var empIds = ['buyer', 'seller']
+                        var filteredArray = pythonResponse.filter(function (itm) {
+                          return empIds.indexOf(itm.label) > -1;
+                        });
+                        //  this.sampleDictactedFields = Array.from(new Set(filteredArray.map((item: any) => {item.text, item.label})))
+                        this.sampleDictactedFields = Array.from(new Set(filteredArray.map((item: any) => item.text)))
+                        setTimeout(() => {
+                        }, 2000);
+                        if (this.file.type === "application/pdf") {
+                          this.isPdf = true;
+                          this.data = new Uint8Array(e.target.result);
+                          this.isDictDataLoaded = true;
+                          this.processsingData = false;
+                          this.showForm = true;
+                        } else {
+                          this.isPdf = false;
+                        }
+                        error => { this.processsingData = false; console.log('oops', error) }
+                      });
+
                   });
               }, 40000);
-              // this.httpService
-              //   .get(
-              //     "http://fai-blr02s1136:8090/api/DocConvert/Convert?id=" +
-              //       response.TemplateId +
-              //       "/" +
-              //       this.filename,
-              //     { headers, responseType: "text" as "json" }
-              //   )
-              //   .subscribe(asposConvertedData => {
-              //     // console.log('response', asposConvertedData);
-
-              //   });
             });
         };
       }
@@ -500,15 +497,13 @@ export class AdminComponent implements OnInit {
     return window.btoa(binary);
   }
 
-  addMergeField() {
-    this.newMergeFieldForm = true;
-  }
+
   addFieldToForm() {
     this.areaInfoInPixels.forEach(x => {
       if (x.Text == this.mergeFieldName) {
       }
     });
-    this.extractedData.push(this.mergeFieldName);
+    this.extractedData.push();
   }
   delayedRetry(delayMs: number, maxRetry = 5) {
     let retries = maxRetry;
@@ -517,24 +512,25 @@ export class AdminComponent implements OnInit {
     )))
   }
 
+  FieldInit(identifier: string) {
+    if (identifier === "Buyer")
+      return 'BuyerName';
+    if (identifier === "Seller")
+      return 'SellerName';
+
+  }
+
   findRect(word: AreaInfo, threshold: Rectangle) {
-    if (word.rect.x1 < threshold.x1 || word.rect.x1 > threshold.x2) {
-
+    if ((word.rect.x1 + word.rect.width) < (threshold.x1 + threshold.width)
+      && (word.rect.x1) > (threshold.x1)
+      && (word.rect.y1) > (threshold.y1)
+      && (word.rect.y1 + word.rect.height) < (threshold.y1 + threshold.height)
+    ) {
+      return true;
+    }
+    else {
       return false;
     }
-    if (word.rect.x2 < threshold.x1 || word.rect.x2 > threshold.x2) {
-
-      return false;
-    }
-    if (word.rect.y1 < threshold.y1 || word.rect.y1 > threshold.y2) {
-
-      return false;
-    }
-    if (word.rect.y2 < threshold.y1 || word.rect.y2 > threshold.y2) {
-
-      return false;
-    }
-    return true;
   }
 }
 
@@ -571,9 +567,50 @@ class PagePixels {
   x: number;
   y: number;
 }
+
+
 class postDataModel {
-  highlighted_text: string;
-  type_of_field: string;
-  merged_field: string;
-  raidof_ield: string;
+  id = "";
+  x1: number;
+  x2: number;
+  y1: number;
+  y2: number;
+  height: number;
+  width: number;
+  mergeFieldText: string;
+  mergeFieldIdentifier: string;
+  value: string;
+  isBlankField: boolean;
+  entityType: string;
+
+  constructor(
+    id = "",
+    x1: number,
+    x2: number,
+    y1: number,
+    y2: number,
+    height: number,
+    width: number,
+    mergeFieldText: string,
+    mergeFieldIdentifier: string,
+    value: string = "",
+    isBlankField: boolean = false,
+    entityType: string) {
+    this.id = id;
+    this.x1 = x1;
+    this.x2 = x2;
+    this.y1 = y1;
+    this.y2 = y2;
+    this.height = height;
+    this.width = width;
+    this.mergeFieldText = mergeFieldText;
+    this.mergeFieldIdentifier = mergeFieldIdentifier;
+    this.value = value;
+    this.isBlankField = isBlankField;
+    this.entityType = entityType
+  }
+
+
 }
+
+
