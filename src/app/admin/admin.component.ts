@@ -481,7 +481,7 @@ export class AdminComponent implements OnInit {
                       });
 
                   });
-              }, 40000); 
+              }, 40000);  
             });
         };
       }
