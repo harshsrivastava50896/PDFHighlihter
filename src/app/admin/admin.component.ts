@@ -68,7 +68,7 @@ export class AdminComponent implements OnInit {
   newMergeFieldForm: boolean = false;
   mergeFieldName: string = "";
   templateId = "";
-  loaderMessage :string =  "";
+  loaderMessage: string = "";
 
   rect: Rectangle = { x1: 0, y1: 0, x2: 0, y2: 0, width: 0, height: 0 };
   lastMousePosition: Position = { x: 0, y: 0 };
@@ -417,7 +417,7 @@ export class AdminComponent implements OnInit {
   delete(dataFiled: postDataModel) {
     var toDeleteItems: any = this.extractedData.filter(function (val) { return val.mergeFieldText == dataFiled.mergeFieldText });
     toDeleteItems.forEach(x => { document.getElementById(x.id).remove() });
-   this.displayMergeFieldNames= this.displayMergeFieldNames.filter(function (val) { return val.mergeFieldText != dataFiled.mergeFieldText });
+    this.displayMergeFieldNames = this.displayMergeFieldNames.filter(function (val) { return val.mergeFieldText != dataFiled.mergeFieldText });
     this.extractedData = this.displayMergeFieldNames;
 
     // this.areaInfo.find(f => f.rectangleId === dataFiled.id).isDelete = true;
@@ -445,7 +445,7 @@ export class AdminComponent implements OnInit {
   }
 
   public onFileChange(event: any) {
-    this.loaderMessage ="Processing Data";
+    this.loaderMessage = "Processing Data";
     this.processsingData = true;
     this.file = null;
     const files: File[] = event.target.files;
@@ -502,7 +502,7 @@ export class AdminComponent implements OnInit {
                       });
 
                   });
-              }, 2000);
+              }, 40000);
             });
         };
       }
