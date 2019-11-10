@@ -31,9 +31,11 @@
       <button class="uk-button uk-button-default uk-button-small" type="button" tabindex="-1">Select PDF</button>
     </div>
   </div>
-  <div [ngClass]="{'uk-hidden':!processsingData}" class="uk-text-center">
-    <span class="uk-margin-small-right" uk-spinner="ratio: 3"></span>
-    <p class="uk-margin-remove">Processing PDF.....</p></div>
+  <div [ngClass]="{'uk-hidden':!processsingData}" style="top: 31%;position: relative;" class="uk-text-center">
+      <div id="preloader">
+          <div id="loader"></div>
+        </div>
+    <p class="uk-margin-remove">{{loaderMessage}}.....</p></div>
 
 
 
@@ -47,7 +49,7 @@
     </thead>
     <tbody>
       <tr style="cursor: pointer;" (click)="moveTo(data.id); $event.stopPropagation()"
-        *ngFor="let data of extractedData; let i = index">
+        *ngFor="let data of displayMergeFieldNames; let i = index">
         <td>{{data.mergeFieldText}}</td>
         <td>
           <select [(ngModel)]="data.mergeFieldIdentifier" class="uk-select uk-nav uk-dropdown-nav uk-form-small">
@@ -55,7 +57,7 @@
             <option *ngFor="let fields of mergeFieldTypes " [value]="fields.FieldName">{{fields.FieldName}}</option>
           </select>
         </td>
-        <td><span uk-icon="close"></span></td>
+        <td><span (click)="delete(data)" uk-icon="close"></span></td>
       </tr>
     </tbody>
   </table>

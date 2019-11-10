@@ -54,7 +54,6 @@ export class AdminComponent implements OnInit {
   myData = ["Date", "Text", "ss"];
   postDataModel: postDataModel[] = [];
   mergefieldstring: string[];
-
   file: any;
   filename = "";
   isPdf = false;
@@ -69,6 +68,7 @@ export class AdminComponent implements OnInit {
   newMergeFieldForm: boolean = false;
   mergeFieldName: string = "";
   templateId = "";
+  loaderMessage :string =  "";
 
   rect: Rectangle = { x1: 0, y1: 0, x2: 0, y2: 0, width: 0, height: 0 };
   lastMousePosition: Position = { x: 0, y: 0 };
@@ -106,6 +106,7 @@ export class AdminComponent implements OnInit {
   listRectangleId = "";
   mergeFieldTypes: MergeFieldsNames[] = [];
   blankFieldCount: number = 0;
+  displayMergeFieldNames: postDataModel[] = [];
 
 
 
@@ -130,6 +131,9 @@ export class AdminComponent implements OnInit {
     console.log("area info", image.getBoundingClientRect());
   }
   postData() {
+    this.showForm = false;
+    this.processsingData = true;
+    this.loaderMessage = "Genrerating Template";
     console.log(this.extractedData);
     this.extractedData.forEach(x => {
       x.entityType = x.mergeFieldIdentifier;
@@ -154,10 +158,12 @@ export class AdminComponent implements OnInit {
           "TemplateId": this.templateId,
           "Type": "TemplateDocx"
         }, { headers: headers, }).subscribe((response: any) => {
+          this.loaderMessage = "DownloadingTemplate";
           console.log('response', response.data);
           const bytes = new Uint8Array(response.data);
           var blob = new Blob([bytes], { type: 'application/octet-stream' });
           saveAs(blob, "wokingdownload.docx");
+          this.processsingData = false;
         })
       })
 
@@ -308,8 +314,10 @@ export class AdminComponent implements OnInit {
 
     if (this.isDictDataLoaded) {
       this.sampleDictactedFields.forEach(x => {
+        console.log('names', x.text);
+
         this.areaInfoInPixels.forEach(element => {
-          if (element.pageNumber == this.indexOfPage && element.Text == x) {
+          if (element.pageNumber == this.indexOfPage && (element.Text.includes(x.text))) {
             if (element.pageNumber == this.indexOfPage) {
               if (typeof element !== undefined) {
                 const rectId =
@@ -332,17 +340,24 @@ export class AdminComponent implements OnInit {
                 this.highlightedTextFields.push(element);
                 // this.extractedData.push(new postDataModel(element.Id, element.rect.x1, element.rect.x2, element.rect.y1, element.rect.y2, this.pageCoordinates.height,
                 //    this.pageCoordinates.width, element.Text, x.label == 'Buyer'?'BuyerName':'SellerName', "", false, x.label == 'Buyer'?'BuyerName':'SellerName'));
-                   this.extractedData.push(new postDataModel(element.Id, element.rect.x1, element.rect.x2, element.rect.y1, element.rect.y2, this.pageCoordinates.height,
-                    this.pageCoordinates.width, element.Text,"", "", false, ""));
+                this.extractedData.push(new postDataModel(element.Id, element.rect.x1, element.rect.x2, element.rect.y1, element.rect.y2, this.pageCoordinates.height,
+                  this.pageCoordinates.width, element.Text, x.label, "", false, x.label));
                 // console.log('upadted array', this.element);
               }
             }
           }
         });
-      });
 
+      });
+      this.extractedData.forEach((item) => {
+        var i = this.displayMergeFieldNames.findIndex(x => x.mergeFieldText == item.mergeFieldText);
+        if (i <= -1) {
+          this.displayMergeFieldNames.push(item);
+        }
+      });
       this.indexOfPage++;
     }
+
   }
 
   composedPath(el) {
@@ -399,10 +414,14 @@ export class AdminComponent implements OnInit {
     this.rect = { x1: 0, y1: 0, x2: 0, y2: 0, width: 0, height: 0 };
   }
 
-  delete(list: AreaInfo) {
-    document.getElementById(list.rectangleId).remove();
-    this.areaInfo.find(f => f.rectangleId === list.rectangleId).isDelete = true;
-    this.areaInfo = this.areaInfo.filter(f => f.isDelete === false);
+  delete(dataFiled: postDataModel) {
+    var toDeleteItems: any = this.extractedData.filter(function (val) { return val.mergeFieldText == dataFiled.mergeFieldText });
+    toDeleteItems.forEach(x => { document.getElementById(x.id).remove() });
+   this.displayMergeFieldNames= this.displayMergeFieldNames.filter(function (val) { return val.mergeFieldText != dataFiled.mergeFieldText });
+    this.extractedData = this.displayMergeFieldNames;
+
+    // this.areaInfo.find(f => f.rectangleId === dataFiled.id).isDelete = true;
+    // this.areaInfo = this.areaInfo.filter(f => f.isDelete === false);
   }
   moveTo(list: string) {
     if (this.listRectangleId != "") {
@@ -426,6 +445,7 @@ export class AdminComponent implements OnInit {
   }
 
   public onFileChange(event: any) {
+    this.loaderMessage ="Processing Data";
     this.processsingData = true;
     this.file = null;
     const files: File[] = event.target.files;
@@ -460,12 +480,13 @@ export class AdminComponent implements OnInit {
                         response.TemplateId
                       ).pipe(this.delayedRetry(5000, 8))
                       .subscribe((pythonResponse: any[]) => {
-                        var empIds = ['buyer', 'seller']
-                        var filteredArray = pythonResponse.filter(function (itm) {
-                          return empIds.indexOf(itm.label) > -1;
-                        });
+                        // var empIds = ['buyer', 'seller']
+                        // var filteredArray = pythonResponse.filter(function (itm) {
+                        //   return empIds.indexOf(itm.label) > -1;
+                        // });
                         //  this.sampleDictactedFields = Array.from(new Set(filteredArray.map((item: any) => {item.text, item.label})))
-                        this.sampleDictactedFields = Array.from(new Set(filteredArray.map((item: any) => item.text)))
+                        // this.sampleDictactedFields = Array.from(new Set(filteredArray.map((item: any) => item.text)))
+                        this.sampleDictactedFields = pythonResponse
                         setTimeout(() => {
                         }, 2000);
                         if (this.file.type === "application/pdf") {
@@ -481,7 +502,7 @@ export class AdminComponent implements OnInit {
                       });
 
                   });
-              }, 40000);  
+              }, 2000);
             });
         };
       }
