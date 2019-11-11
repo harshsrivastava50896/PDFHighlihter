@@ -69,7 +69,7 @@ export class AdminComponent implements OnInit {
   mergeFieldName: string = "";
   templateId = "";
   loaderMessage: string = "";
-  confirmationButton:boolean = false;
+  confirmationButton: boolean = false;
 
   rect: Rectangle = { x1: 0, y1: 0, x2: 0, y2: 0, width: 0, height: 0 };
   lastMousePosition: Position = { x: 0, y: 0 };
@@ -108,7 +108,7 @@ export class AdminComponent implements OnInit {
   mergeFieldTypes: MergeFieldsNames[] = [];
   blankFieldCount: number = 0;
   displayMergeFieldNames: postDataModel[] = [];
-  verifyTemplateButton : boolean = false;
+  showSelectPdf: boolean = true;
 
 
   ngOnInit() {
@@ -134,13 +134,13 @@ export class AdminComponent implements OnInit {
   postData() {
     this.showForm = false;
     this.processsingData = true;
-    this.loaderMessage = "Genrerating Template";
+    this.loaderMessage = "Generating Template";
     console.log(this.extractedData);
     this.extractedData.forEach(x => {
       x.entityType = x.mergeFieldIdentifier;
     });
 
-    this.httpService.post('http://fai-blr02s1136:8090/api/PDFUtil/AddMergeFields?docId=' + this.templateId, { MergeFields: this.displayMergeFieldNames }).subscribe((dataRecived: any) => {
+    this.httpService.post('https://localhost:44382/api/PDFUtil/AddMergeFields?docId=' + this.templateId, { MergeFields: this.displayMergeFieldNames }).subscribe((dataRecived: any) => {
       console.log('data got', dataRecived);
       let headers: HttpHeaders = new HttpHeaders();
       headers = headers.append('Content-Type', 'application/octect-stream');
@@ -159,14 +159,14 @@ export class AdminComponent implements OnInit {
           "TemplateId": this.templateId,
           "Type": "TemplateDocx"
         }, { headers: headers, }).subscribe((response: any) => {
-          this.loaderMessage = "DownloadingTemplate";
+          this.loaderMessage = "Downloading Template....";
           console.log('response', response.data);
           const bytes = new Uint8Array(response.data);
           var blob = new Blob([bytes], { type: 'application/octet-stream' });
-          saveAs(blob, this.filename+"_template.docx");
+          saveAs(blob, this.filename + "_template.docx");
           this.processsingData = false;
           this.confirmationButton = true;
-          this.verifyTemplateButton = true;
+          this.showSelectPdf = false;
         })
       })
 
@@ -215,8 +215,61 @@ export class AdminComponent implements OnInit {
     console.log("extracted text", this.extractedData);
   }
   verifyTemplate() {
-    this.verifyTemplateButton  =false;
     this.confirmationButton = false;
+    this.loaderMessage = "Merging Document....";
+    this.processsingData = true;
+
+    let headers: HttpHeaders = new HttpHeaders();
+    headers = headers.append("Content-Type", "application/octect-stream");
+    headers = headers.append("ResponseType", "application/json");
+    headers.append(
+      "Access-Control-Allow-Headers",
+      "Content-Type,X-Amz-Date,Authorization,X-Api-Key"
+    );
+    headers.append("Access-Control-Allow-Origin", "http://localhost:4200");
+    headers.append(
+      "Access-Control-Allow-Methods",
+      "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT"
+    );
+    let headersTemplate: HttpHeaders = new HttpHeaders();
+    headersTemplate.append(
+      "Access-Control-Allow-Headers",
+      "Content-Type,X-Amz-Date,Authorization,X-Api-Key"
+    );
+    headersTemplate.append(
+      "Access-Control-Allow-Origin",
+      "http://localhost:4200"
+    );
+    headersTemplate.append(
+      "Access-Control-Allow-Methods",
+      "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT"
+    );
+    var url =
+      "https://uo07tg7tf3.execute-api.us-east-1.amazonaws.com/test/mailmerge?id=" +
+      this.templateId;
+    this.httpService
+      .post<any>(url, null, { headers: headersTemplate })
+      .subscribe((response: any) => {
+        this.loaderMessage = "Downloading Merged Document...."
+        this.httpService
+          .post<any>(
+            "https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/download",
+            {
+              TemplateId: response,
+              Type: "FinalDocx"
+            },
+            { headers: headers }
+          )
+          .subscribe((response: any) => {
+            console.log("response", response.data);
+            var bytes = new Uint8Array(response.data);
+            var blob = new Blob([bytes], { type: "application/octet-stream" });
+            saveAs(blob, this.filename + "_Mergerd.docx");
+          });
+        this.processsingData = false;
+        this.showSelectPdf = true;
+        this.data = "./assets/welocme_pdf.pdf"
+      });
   }
   mouseEvent(event) {
     if (!this.showPopup) {
@@ -323,8 +376,54 @@ export class AdminComponent implements OnInit {
       this.sampleDictactedFields.forEach(x => {
         console.log('names', x.text);
 
-        this.areaInfoInPixels.forEach(element => {
-          if (element.pageNumber == this.indexOfPage && (element.Text.includes(x.text))) {
+        this.areaInfoInPixels.forEach((element,index) => {
+          if(element.pageNumber == this.indexOfPage && x.text.split(" ").length >1 ){
+            let words = x.text.split(" ");
+            let concatedReactangle : Rectangle = new Rectangle();
+            if(element.Text.includes(words[0])) {
+              if(index> 1 && this.areaInfoInPixels[index-1].Text.includes(words[1])){
+                concatedReactangle.x1 = this.areaInfoInPixels[index-1].rect.x1;
+                concatedReactangle.x2 = this.areaInfoInPixels[index].rect.x2;
+                concatedReactangle.y1 = this.areaInfoInPixels[index-1].rect.y1;
+                concatedReactangle.y2 = this.areaInfoInPixels[index].rect.y2;
+                concatedReactangle.width = concatedReactangle.x2 - concatedReactangle.x1;
+                concatedReactangle.height = concatedReactangle.y2 - concatedReactangle.y1;
+              }
+              if(index< this.areaInfoInPixels.length -1  &&this.areaInfoInPixels[index+1].Text.includes(words[1])){
+                concatedReactangle.x1 = this.areaInfoInPixels[index].rect.x1;
+                concatedReactangle.x2 = this.areaInfoInPixels[index+1].rect.x2;
+                concatedReactangle.y1 = this.areaInfoInPixels[index].rect.y1;
+                concatedReactangle.y2 = this.areaInfoInPixels[index+1].rect.y2;
+                concatedReactangle.width = concatedReactangle.x2 - concatedReactangle.x1;
+                concatedReactangle.height = concatedReactangle.y2 - concatedReactangle.y1;
+              }
+            }
+
+            if(concatedReactangle.width > 0 && concatedReactangle.height > 0){
+              const rectId =
+              document.getElementsByClassName("rectangle").length + 1;
+            const rect = document.createElement("div");
+            rect.className = "rectangle";
+            rect.id = element.Id;
+            rect.style.position = "absolute";
+            rect.style.border = "2px solid #0084FF";
+            rect.style.borderRadius = "3px";
+            rect.style.left = concatedReactangle.x1 + "px";
+            rect.style.top = concatedReactangle.y1 + "px";
+            rect.style.width = concatedReactangle.width + "px";
+            rect.style.height = concatedReactangle.height + "px";
+            rect.style.cursor = "pointer";
+            path
+              .find(p => p.className == "page")
+              .children[2].appendChild(rect);
+            this.highlightedTextFields.push(element);
+            // this.extractedData.push(new postDataModel(element.Id, element.rect.x1, element.rect.x2, element.rect.y1, element.rect.y2, this.pageCoordinates.height,
+            //    this.pageCoordinates.width, element.Text, x.label == 'Buyer'?'BuyerName':'SellerName', "", false, x.label == 'Buyer'?'BuyerName':'SellerName'));
+            this.extractedData.push(new postDataModel(element.Id, concatedReactangle.x1, concatedReactangle.x2, concatedReactangle.y1, concatedReactangle.y2, this.pageCoordinates.height,
+              this.pageCoordinates.width, x.text, x.label, "", false, x.label));
+            }
+          }
+          else if (element.pageNumber == this.indexOfPage && (element.Text.includes(x.text))) {
             if (element.pageNumber == this.indexOfPage) {
               if (typeof element !== undefined) {
                 const rectId =
@@ -353,6 +452,7 @@ export class AdminComponent implements OnInit {
               }
             }
           }
+
         });
 
       });
@@ -465,7 +565,7 @@ export class AdminComponent implements OnInit {
         reader.readAsArrayBuffer(this.file);
         reader.onload = (e: any) => {
           this.tobase64Data = this.arrayBufferToBase64(reader.result);
-          this.loaderMessage ="Uplaoding Document.."
+          this.loaderMessage = "Uploading Document.."
           this.httpService
             .post(
               "https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/upload",
@@ -489,7 +589,7 @@ export class AdminComponent implements OnInit {
                         response.TemplateId
                       ).pipe(this.delayedRetry(5000, 8))
                       .subscribe((pythonResponse: any[]) => {
-                        this.loaderMessage="Analyzing Document..."
+                        this.loaderMessage = "Analyzing Document..."
                         // var empIds = ['buyer', 'seller']
                         // var filteredArray = pythonResponse.filter(function (itm) {
                         //   return empIds.indexOf(itm.label) > -1;
@@ -562,6 +662,12 @@ export class AdminComponent implements OnInit {
     else {
       return false;
     }
+  }
+
+  editTemplate() {
+    this.showForm = true;
+    this.showSelectPdf = false;
+    this.confirmationButton = false;
   }
 }
 

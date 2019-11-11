@@ -32,7 +32,7 @@
   <div class="left-logo uk-flex uk-flex-middle uk-flex-center uk-margin">
     <img class="custom-logo" src="assets/dashboard-logo2.svg" alt="" />
   </div>
-  <div class="uk-margin uk-flex uk-flex-center" [ngClass]="{ 'uk-hidden': processsingData || verifyTemplateButton }">
+  <div class="uk-margin uk-flex uk-flex-center" [ngClass]="{ 'uk-hidden': processsingData || !showSelectPdf }">
     <div uk-form-custom>
       <input (change)="onFileChange($event)" type="file" />
       <button class="uk-button uk-button-default uk-button-small" type="button" tabindex="-1">
@@ -81,13 +81,13 @@
       </button>
     </div>
     <div [ngClass]="{ 'uk-hidden': !confirmationButton }" class="uk-flex uk-flex-right uk-button-small">
-      <button (click)="postData()" class="uk-button uk-button-primary uk-background-primary uk-button-small">
+      <button (click)="editTemplate()" class="uk-button uk-button-primary uk-background-primary uk-button-small">
         EDIT TEMPLATE
       </button>
     </div>
   </div>
 
-   
+
 </aside>
 <!-- /LEFT BAR -->
 <!-- CONTENT -->
