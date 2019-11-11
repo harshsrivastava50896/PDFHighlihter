@@ -27,7 +27,7 @@
   <div class="uk-margin uk-flex uk-flex-center">
     <div uk-form-custom>
       <input  type="file">
-      <button class="uk-button uk-button-default uk-button-small" type="button" tabindex="-1">Your Templates</button>
+      <button class="uk-button uk-button-primary uk-button-small" type="button" tabindex="-1">Your Templates</button>
     </div>
   </div>
   <div *ngIf="(spinner == true)">
@@ -39,18 +39,25 @@
       </div>
   <p class="uk-margin-remove">{{loaderMessage}}</p></div>
 
-  <form  [ngClass]="{'uk-hidden' :!showTemplates}" [formGroup]="form" (ngSubmit)="submit()">
+  <div  [ngClass]="{'uk-hidden' :!showTemplates}">
+      <div class="uk-margin uk-margin uk-flex uk-flex-center">
+          <div class="uk-search uk-search-default ">
+              <span class="uk-search-icon-flip" uk-search-icon></span>
+              <input [(ngModel)]="searchText" class=" uk-search-input search-uk" type="search" placeholder="Search...">
+          </div>
+      </div>
+     
     <ul  class="uk-list uk-list-striped">
-      <li class="uk-width-1-1 nm uk-text-primary uk-text-uppercase" formArrayName="orders" *ngFor="let order of form.controls.orders['controls']; let i = index">
-        <input type="checkbox" [formControlName]="i">
-        {{ordersData[i].TemplateName}}
+      <li class="uk-width-1-1 nm uk-text-primary uk-text-uppercase" *ngFor="let order of ordersData  | filter : searchText; let i = index" >
+        <input type="radio" name="TemplateName" value="order.TemplateId" (click)="generate(order)">
+        {{order.TemplateName}}
       </li>
     </ul>
 
     <div *ngIf="!form.valid">At least one order must be selected</div>
     <br>
-    <button class="uk-button uk-button-primary uk-margin-bottom uk-margin-right uk-margin-top">Generate Template</button>
-  </form>
+    <button (click)="submit()"  class="uk-button uk-margin-large-left uk-button-primary uk-margin-bottom uk-margin-right uk-margin-top">DOWNLOAD</button>
+  </div>
 </aside>
 <div id="content">
   <div class="uk-container uk-container-expand"  data-uk-height-viewport="expand: true">

@@ -9,16 +9,20 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { HttpClientModule } from "@angular/common/http";
 import { AdminComponent } from './admin/admin.component';
 import { UserComponent } from './user/user.component';
+import { FilterPipe } from './filter.pipe';
+
 
 @NgModule({
-  declarations: [
+  declarations: [ 
     AppComponent,
     FormAdminComponent,
     AdminComponent,
     UserComponent,
+    FilterPipe
+
   ],
   imports: [
-BrowserModule,
+    BrowserModule,
     AppRoutingModule,
     FormsModule,
     PdfViewerModule,
