@@ -69,6 +69,7 @@ export class AdminComponent implements OnInit {
   mergeFieldName: string = "";
   templateId = "";
   loaderMessage: string = "";
+  confirmationButton:boolean = false;
 
   rect: Rectangle = { x1: 0, y1: 0, x2: 0, y2: 0, width: 0, height: 0 };
   lastMousePosition: Position = { x: 0, y: 0 };
@@ -107,7 +108,7 @@ export class AdminComponent implements OnInit {
   mergeFieldTypes: MergeFieldsNames[] = [];
   blankFieldCount: number = 0;
   displayMergeFieldNames: postDataModel[] = [];
-
+  verifyTemplateButton : boolean = false;
 
 
   ngOnInit() {
@@ -139,7 +140,7 @@ export class AdminComponent implements OnInit {
       x.entityType = x.mergeFieldIdentifier;
     });
 
-    this.httpService.post('https://localhost:44382/api/PDFUtil/AddMergeFields?docId=' + this.templateId, { MergeFields: this.displayMergeFieldNames }).subscribe((dataRecived: any) => {
+    this.httpService.post('http://fai-blr02s1136:8090/api/PDFUtil/AddMergeFields?docId=' + this.templateId, { MergeFields: this.displayMergeFieldNames }).subscribe((dataRecived: any) => {
       console.log('data got', dataRecived);
       let headers: HttpHeaders = new HttpHeaders();
       headers = headers.append('Content-Type', 'application/octect-stream');
@@ -162,8 +163,10 @@ export class AdminComponent implements OnInit {
           console.log('response', response.data);
           const bytes = new Uint8Array(response.data);
           var blob = new Blob([bytes], { type: 'application/octet-stream' });
-          saveAs(blob, "wokingdownload.docx");
+          saveAs(blob, this.filename+"_template.docx");
           this.processsingData = false;
+          this.confirmationButton = true;
+          this.verifyTemplateButton = true;
         })
       })
 
@@ -210,6 +213,10 @@ export class AdminComponent implements OnInit {
 
     console.log("Area Info in pixels", this.areaInfoInPixels);
     console.log("extracted text", this.extractedData);
+  }
+  verifyTemplate() {
+    this.verifyTemplateButton  =false;
+    this.confirmationButton = false;
   }
   mouseEvent(event) {
     if (!this.showPopup) {
@@ -458,6 +465,7 @@ export class AdminComponent implements OnInit {
         reader.readAsArrayBuffer(this.file);
         reader.onload = (e: any) => {
           this.tobase64Data = this.arrayBufferToBase64(reader.result);
+          this.loaderMessage ="Uplaoding Document.."
           this.httpService
             .post(
               "https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/upload",
@@ -481,6 +489,7 @@ export class AdminComponent implements OnInit {
                         response.TemplateId
                       ).pipe(this.delayedRetry(5000, 8))
                       .subscribe((pythonResponse: any[]) => {
+                        this.loaderMessage="Analyzing Document..."
                         // var empIds = ['buyer', 'seller']
                         // var filteredArray = pythonResponse.filter(function (itm) {
                         //   return empIds.indexOf(itm.label) > -1;

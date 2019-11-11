@@ -22,6 +22,8 @@ export class UserComponent implements OnInit {
   processsingData: boolean = false;
   loaderMessage="Loading Templates"
   showTemplates : boolean = false;
+  templateName : string="";
+  checked: boolean = false;
   constructor(
     private httpClient: HttpClient,
     private formBuilder: FormBuilder
@@ -50,7 +52,7 @@ export class UserComponent implements OnInit {
 
   private addCheckboxes() {
     this.ordersData.forEach((o, i) => {
-      const control = new FormControl(i === 0); // if first item set to true, else false
+      const control = new FormControl(); // if first item set to true, else false
       (this.form.controls.orders as FormArray).push(control);
     });
   }
@@ -76,6 +78,8 @@ export class UserComponent implements OnInit {
     const selectedOrderIds = this.form.value.orders
       .map((v, i) => (v ? this.ordersData[i].TemplateId : null))
       .filter(v => v !== null);
+    var template  = this.ordersData.filter(x => x.TemplateId == selectedOrderIds);
+    this.templateName = template[0].TemplateName;
     console.log(selectedOrderIds);
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append("Content-Type", "application/octect-stream");
@@ -124,6 +128,7 @@ export class UserComponent implements OnInit {
       "https://uo07tg7tf3.execute-api.us-east-1.amazonaws.com/test/mailmerge?id=" +
       krunalTemplateID;
 
+
     this.httpClient
       .post<any>(url, null, { headers: headersTemplate })
       .subscribe((response: any) => {
@@ -143,7 +148,7 @@ export class UserComponent implements OnInit {
             console.log("response", response.data);
             var bytes = new Uint8Array(response.data);
             var blob = new Blob([bytes], { type: "application/octet-stream" });
-            saveAs(blob, "wokingdownload.docx");
+            saveAs(blob, this.templateName+"_Mergerd.docx");
             console.log(bytes);
             mammoth
               .convertToHtml({ arrayBuffer: bytes })

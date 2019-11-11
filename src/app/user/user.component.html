@@ -26,7 +26,7 @@
   </div>
   <div class="uk-margin uk-flex uk-flex-center">
     <div uk-form-custom>
-      <input (change)="onFileChange($event)" type="file">
+      <input  type="file">
       <button class="uk-button uk-button-default uk-button-small" type="button" tabindex="-1">Your Templates</button>
     </div>
   </div>
@@ -40,10 +40,12 @@
   <p class="uk-margin-remove">{{loaderMessage}}</p></div>
 
   <form  [ngClass]="{'uk-hidden' :!showTemplates}" [formGroup]="form" (ngSubmit)="submit()">
-    <label class="uk-width-1-1 nm uk-text-primary uk-text-uppercase" formArrayName="orders" *ngFor="let order of form.controls.orders.controls; let i = index">
-      <input type="checkbox" [formControlName]="i">
-      {{ordersData[i].TemplateName}}
-    </label>
+    <ul  class="uk-list uk-list-striped">
+      <li class="uk-width-1-1 nm uk-text-primary uk-text-uppercase" formArrayName="orders" *ngFor="let order of form.controls.orders['controls']; let i = index">
+        <input type="checkbox" [formControlName]="i">
+        {{ordersData[i].TemplateName}}
+      </li>
+    </ul>
 
     <div *ngIf="!form.valid">At least one order must be selected</div>
     <br>
