@@ -9,6 +9,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { HttpClientModule } from "@angular/common/http";
 import { AdminComponent } from './admin/admin.component';
 import { UserComponent } from './user/user.component';
+import { LocationStrategy, HashLocationStrategy } from "@angular/common";
 
 @NgModule({
   declarations: [
@@ -18,7 +19,7 @@ import { UserComponent } from './user/user.component';
     UserComponent,
   ],
   imports: [
-BrowserModule,
+    BrowserModule,
     AppRoutingModule,
     FormsModule,
     PdfViewerModule,
@@ -26,7 +27,7 @@ BrowserModule,
     NgxSpinnerModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
