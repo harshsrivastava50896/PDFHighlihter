@@ -33,9 +33,13 @@
   <div *ngIf="(spinner == true)">
     <div  uk-spinner></div>
   </div>
+  <div [ngClass]="{'uk-hidden':!processsingData}" style="top: 31%;position: relative;" class="uk-text-center">
+    <div id="preloader">
+        <div id="loader"></div>
+      </div>
+  <p class="uk-margin-remove">{{loaderMessage}}</p></div>
 
-
-  <form  [formGroup]="form" (ngSubmit)="submit()">
+  <form  [ngClass]="{'uk-hidden' :!showTemplates}" [formGroup]="form" (ngSubmit)="submit()">
     <label class="uk-width-1-1 nm uk-text-primary uk-text-uppercase" formArrayName="orders" *ngFor="let order of form.controls.orders.controls; let i = index">
       <input type="checkbox" [formControlName]="i">
       {{ordersData[i].TemplateName}}
