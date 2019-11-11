@@ -59,7 +59,7 @@ export class AdminComponent implements OnInit {
   isPdf = false;
   data: any = "./assets/welocme_pdf.pdf";
   isDictDataLoaded = false;
-  sampleDict: AreaInfo[] = json["default"];
+  sampleDict: AreaInfo[] = [];
   sampleDictactedFields = [];
   tobase64Data: any;
   processsingData = false;
@@ -139,7 +139,7 @@ export class AdminComponent implements OnInit {
       x.entityType = x.mergeFieldIdentifier;
     });
 
-    this.httpService.post('https://localhost:44382/api/PDFUtil/AddMergeFields?docId=' + this.templateId, { MergeFields: this.extractedData }).subscribe((dataRecived: any) => {
+    this.httpService.post('https://localhost:44382/api/PDFUtil/AddMergeFields?docId=' + this.templateId, { MergeFields: this.displayMergeFieldNames }).subscribe((dataRecived: any) => {
       console.log('data got', dataRecived);
       let headers: HttpHeaders = new HttpHeaders();
       headers = headers.append('Content-Type', 'application/octect-stream');
@@ -392,10 +392,10 @@ export class AdminComponent implements OnInit {
       }
     })
     if (concatTedFields == "") {
-      this.extractedData.push(new postDataModel(this.element.id, this.rect.x1, this.rect.x2, this.rect.y1, this.rect.y2, this.pageCoordinates.height, this.pageCoordinates.width, 'BlankField_' + this.blankFieldCount.toString(), "", "", true, ""));
+      this.displayMergeFieldNames.push(new postDataModel(this.element.id, this.rect.x1, this.rect.x2, this.rect.y1, this.rect.y2, this.pageCoordinates.height, this.pageCoordinates.width, 'BlankField_' + this.blankFieldCount.toString(), "", "", true, ""));
       this.blankFieldCount++;
     }
-    else { this.extractedData.push(new postDataModel(this.element.id, this.rect.x1, this.rect.x2, this.rect.y1, this.rect.y2, this.pageCoordinates.height, this.pageCoordinates.width, concatTedFields, "", "", false, "")); }
+    else { this.displayMergeFieldNames.push(new postDataModel(this.element.id, this.rect.x1, this.rect.x2, this.rect.y1, this.rect.y2, this.pageCoordinates.height, this.pageCoordinates.width, concatTedFields, "", "", false, "")); }
     this.areaInfo.push({
       rectangleId: this.element.id,
       pageNumber: this.dataPageNumber,
@@ -445,6 +445,7 @@ export class AdminComponent implements OnInit {
   }
 
   public onFileChange(event: any) {
+    this.showForm = false;
     this.loaderMessage = "Processing Data";
     this.processsingData = true;
     this.file = null;
@@ -502,7 +503,7 @@ export class AdminComponent implements OnInit {
                       });
 
                   });
-              }, 40000);
+              }, 2000);
             });
         };
       }
