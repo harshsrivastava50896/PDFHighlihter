@@ -9,7 +9,6 @@ import {
 } from "@angular/forms";
 import { HttpClient, HttpHeaders, HttpErrorResponse } from "@angular/common/http";
 import { THIS_EXPR, ThrowStmt } from "@angular/compiler/src/output/output_ast";
-import * as json from "../../assets/sample3.json";
 import { NgxSpinnerService } from "ngx-spinner";
 import { PDFDocumentProxy } from "pdfjs-dist";
 import { toBase64String } from "@angular/compiler/src/output/source_map";
@@ -140,7 +139,7 @@ export class AdminComponent implements OnInit {
       x.entityType = x.mergeFieldIdentifier;
     });
 
-    this.httpService.post('https://localhost:44382/api/PDFUtil/AddMergeFields?docId=' + this.templateId, { MergeFields: this.displayMergeFieldNames }).subscribe((dataRecived: any) => {
+    this.httpService.post('http://fai-blr02s1136:8090/api/PDFUtil/AddMergeFields?docId=' + this.templateId, { MergeFields: this.displayMergeFieldNames }).subscribe((dataRecived: any) => {
       console.log('data got', dataRecived);
       let headers: HttpHeaders = new HttpHeaders();
       headers = headers.append('Content-Type', 'application/octect-stream');
