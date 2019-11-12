@@ -49,8 +49,10 @@
      
     <ul  class="uk-list uk-list-striped">
       <li class="uk-width-1-1 nm uk-text-primary uk-text-uppercase" *ngFor="let order of ordersData  | filter : searchText; let i = index" >
-        <input type="radio" name="TemplateName" value="order.TemplateId" (click)="generate(order)">
-        {{order.TemplateName}}
+        <label >
+          <input type="radio" class="uk-radio" name="TemplateName" value="order.TemplateId" (click)="generate(order)">
+          {{order.TemplateName}}
+        </label>
       </li>
     </ul>
 
