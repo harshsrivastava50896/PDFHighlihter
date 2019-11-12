@@ -25,6 +25,7 @@ export class UserComponent implements OnInit {
   templateName : string="";
   checked: boolean = false;
   selectedOrderIdss:any;
+  searchText : "";
   
   constructor(
     private httpClient: HttpClient,
