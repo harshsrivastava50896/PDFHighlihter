@@ -145,12 +145,12 @@ export class AdminComponent implements OnInit {
       headers = headers.append('Content-Type', 'application/octect-stream');
       headers = headers.append('ResponseType', 'application/json');
       headers.append("Access-Control-Allow-Headers", "Content-Type,X-Amz-Date,Authorization,X-Api-Key");
-      headers.append("Access-Control-Allow-Origin", "http://localhost:4200"); // Remove this and add s3 URL after deploy
+      headers.append("Access-Control-Allow-Origin", "http://techtalk-lfg-demo.s3-website-us-east-1.amazonaws.com/"); // Remove this and add s3 URL after deploy
       headers.append("Access-Control-Allow-Methods", "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT");
 
       let headersForTemplate: HttpHeaders = new HttpHeaders();
       headersForTemplate.append("Access-Control-Allow-Headers", "Content-Type,X-Amz-Date,Authorization,X-Api-Key");
-      headersForTemplate.append("Access-Control-Allow-Origin", "http://localhost:4200"); // Remove this and add s3 URL after deploy
+      headersForTemplate.append("Access-Control-Allow-Origin", "http://techtalk-lfg-demo.s3-website-us-east-1.amazonaws.com/"); // Remove this and add s3 URL after deploy
       headersForTemplate.append("Access-Control-Allow-Methods", "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT");
       this.httpService.post('https://s7qljl48a0.execute-api.us-east-1.amazonaws.com/test/generatetemplate?id=' + this.templateId, null, { headers: headersForTemplate }).subscribe(dataRecived => {
 
@@ -225,7 +225,7 @@ export class AdminComponent implements OnInit {
       "Access-Control-Allow-Headers",
       "Content-Type,X-Amz-Date,Authorization,X-Api-Key"
     );
-    headers.append("Access-Control-Allow-Origin", "http://localhost:4200");
+    headers.append("Access-Control-Allow-Origin", "http://techtalk-lfg-demo.s3-website-us-east-1.amazonaws.com/");
     headers.append(
       "Access-Control-Allow-Methods",
       "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT"
@@ -237,7 +237,7 @@ export class AdminComponent implements OnInit {
     );
     headersTemplate.append(
       "Access-Control-Allow-Origin",
-      "http://localhost:4200"
+      "http://techtalk-lfg-demo.s3-website-us-east-1.amazonaws.com/"
     );
     headersTemplate.append(
       "Access-Control-Allow-Methods",
