@@ -93,9 +93,7 @@ export class AdminComponent implements OnInit {
   element = null;
   dataPageNumber: number;
 
-  areaInfo: AreaInfo[] = [];
   areaInfoInPixels: AreaInfo[] = [];
-  highlightedTextFields: AreaInfo[] = [];
   onPageResize: number;
   onPageLoad: number;
   // added new div with rects when pages rendered
@@ -109,7 +107,8 @@ export class AdminComponent implements OnInit {
   blankFieldCount: number = 0;
   displayMergeFieldNames: postDataModel[] = [];
   showSelectPdf: boolean = true;
-
+  mergeFieldSelection: string = "";
+  indexCount: number = 1;
 
   ngOnInit() {
     this.mergefieldstring = [];
@@ -194,7 +193,6 @@ export class AdminComponent implements OnInit {
     console.log(this.radio_type);
   }
   setpixels() {
-    this.areaInfoInPixels = [] = [];
     this.sampleDict.forEach(x => {
       let areaCooradinate: AreaInfo = new AreaInfo();
       areaCooradinate.rect.height = x.rect.height * this.pageCoordinates.height;
@@ -328,8 +326,8 @@ export class AdminComponent implements OnInit {
             y: event.clientY - this.pagePosition.y
           };
 
-          const rectId =
-            document.getElementsByClassName("rectangle").length + 1;
+          const rectId = this.indexCount++;
+
           this.element = document.createElement("div");
           this.element.className = "rectangle";
           this.element.id = "rectangle-" + rectId;
@@ -338,9 +336,7 @@ export class AdminComponent implements OnInit {
           this.element.style.borderRadius = "3px";
           this.element.style.left = this.lastMousePosition.x + "px";
           this.element.style.top = this.lastMousePosition.y + "px";
-          // console.log("elemenet coordinates", this.element);
-          // console.log("last mouse position", this.lastMousePosition);
-          // console.log("initial mouse", this.mousePosition);
+
         }
       }
 
@@ -376,51 +372,48 @@ export class AdminComponent implements OnInit {
       this.sampleDictactedFields.forEach(x => {
         console.log('names', x.text);
 
-        this.areaInfoInPixels.forEach((element,index) => {
-          if(element.pageNumber == this.indexOfPage && x.text.split(" ").length >1 ){
+        this.areaInfoInPixels.forEach((element, index) => {
+          if (element.pageNumber == this.indexOfPage && x.text.split(" ").length > 1) {
             let words = x.text.split(" ");
-            let concatedReactangle : Rectangle = new Rectangle();
-            if(element.Text.includes(words[0])) {
-              if(index> 1 && this.areaInfoInPixels[index-1].Text.includes(words[1])){
-                concatedReactangle.x1 = this.areaInfoInPixels[index-1].rect.x1;
+            let concatedReactangle: Rectangle = new Rectangle();
+            if (element.Text.includes(words[0])) {
+              if (index > 1 && this.areaInfoInPixels[index - 1].Text.includes(words[1])) {
+                concatedReactangle.x1 = this.areaInfoInPixels[index - 1].rect.x1;
                 concatedReactangle.x2 = this.areaInfoInPixels[index].rect.x2;
-                concatedReactangle.y1 = this.areaInfoInPixels[index-1].rect.y1;
+                concatedReactangle.y1 = this.areaInfoInPixels[index - 1].rect.y1;
                 concatedReactangle.y2 = this.areaInfoInPixels[index].rect.y2;
                 concatedReactangle.width = concatedReactangle.x2 - concatedReactangle.x1;
                 concatedReactangle.height = concatedReactangle.y2 - concatedReactangle.y1;
               }
-              if(index< this.areaInfoInPixels.length -1  &&this.areaInfoInPixels[index+1].Text.includes(words[1])){
+              if (index < this.areaInfoInPixels.length - 1 && this.areaInfoInPixels[index + 1].Text.includes(words[1])) {
                 concatedReactangle.x1 = this.areaInfoInPixels[index].rect.x1;
-                concatedReactangle.x2 = this.areaInfoInPixels[index+1].rect.x2;
+                concatedReactangle.x2 = this.areaInfoInPixels[index + 1].rect.x2;
                 concatedReactangle.y1 = this.areaInfoInPixels[index].rect.y1;
-                concatedReactangle.y2 = this.areaInfoInPixels[index+1].rect.y2;
+                concatedReactangle.y2 = this.areaInfoInPixels[index + 1].rect.y2;
                 concatedReactangle.width = concatedReactangle.x2 - concatedReactangle.x1;
                 concatedReactangle.height = concatedReactangle.y2 - concatedReactangle.y1;
               }
             }
 
-            if(concatedReactangle.width > 0 && concatedReactangle.height > 0){
+            if (concatedReactangle.width > 0 && concatedReactangle.height > 0) {
               const rectId =
-              document.getElementsByClassName("rectangle").length + 1;
-            const rect = document.createElement("div");
-            rect.className = "rectangle";
-            rect.id = element.Id;
-            rect.style.position = "absolute";
-            rect.style.border = "2px solid #0084FF";
-            rect.style.borderRadius = "3px";
-            rect.style.left = concatedReactangle.x1 + "px";
-            rect.style.top = concatedReactangle.y1 + "px";
-            rect.style.width = concatedReactangle.width + "px";
-            rect.style.height = concatedReactangle.height + "px";
-            rect.style.cursor = "pointer";
-            path
-              .find(p => p.className == "page")
-              .children[2].appendChild(rect);
-            this.highlightedTextFields.push(element);
-            // this.extractedData.push(new postDataModel(element.Id, element.rect.x1, element.rect.x2, element.rect.y1, element.rect.y2, this.pageCoordinates.height,
-            //    this.pageCoordinates.width, element.Text, x.label == 'Buyer'?'BuyerName':'SellerName', "", false, x.label == 'Buyer'?'BuyerName':'SellerName'));
-            this.extractedData.push(new postDataModel(element.Id, concatedReactangle.x1, concatedReactangle.x2, concatedReactangle.y1, concatedReactangle.y2, this.pageCoordinates.height,
-              this.pageCoordinates.width, x.text, x.label, "", false, x.label));
+                document.getElementsByClassName("rectangle").length + 1;
+              const rect = document.createElement("div");
+              rect.className = "rectangle";
+              rect.id = element.Id;
+              rect.style.position = "absolute";
+              rect.style.border = "2px solid #0084FF";
+              rect.style.borderRadius = "3px";
+              rect.style.left = concatedReactangle.x1 + "px";
+              rect.style.top = concatedReactangle.y1 + "px";
+              rect.style.width = concatedReactangle.width + "px";
+              rect.style.height = concatedReactangle.height + "px";
+              rect.style.cursor = "pointer";
+              path
+                .find(p => p.className == "page")
+                .children[2].appendChild(rect);
+              this.extractedData.push(new postDataModel(element.Id, concatedReactangle.x1, concatedReactangle.x2, concatedReactangle.y1, concatedReactangle.y2, this.pageCoordinates.height,
+                this.pageCoordinates.width, x.text, x.label, "", false, x.label));
             }
           }
           else if (element.pageNumber == this.indexOfPage && (element.Text.includes(x.text))) {
@@ -443,12 +436,9 @@ export class AdminComponent implements OnInit {
                 path
                   .find(p => p.className == "page")
                   .children[2].appendChild(rect);
-                this.highlightedTextFields.push(element);
-                // this.extractedData.push(new postDataModel(element.Id, element.rect.x1, element.rect.x2, element.rect.y1, element.rect.y2, this.pageCoordinates.height,
-                //    this.pageCoordinates.width, element.Text, x.label == 'Buyer'?'BuyerName':'SellerName', "", false, x.label == 'Buyer'?'BuyerName':'SellerName'));
                 this.extractedData.push(new postDataModel(element.Id, element.rect.x1, element.rect.x2, element.rect.y1, element.rect.y2, this.pageCoordinates.height,
                   this.pageCoordinates.width, element.Text, x.label, "", false, x.label));
-                // console.log('upadted array', this.element);
+
               }
             }
           }
@@ -499,17 +489,11 @@ export class AdminComponent implements OnInit {
       }
     })
     if (concatTedFields == "") {
-      this.displayMergeFieldNames.push(new postDataModel(this.element.id, this.rect.x1, this.rect.x2, this.rect.y1, this.rect.y2, this.pageCoordinates.height, this.pageCoordinates.width, 'BlankField_' + this.blankFieldCount.toString(), "", "", true, ""));
+      this.displayMergeFieldNames.push(new postDataModel(this.element.id, this.rect.x1, this.rect.x2, this.rect.y1, this.rect.y2, this.pageCoordinates.height, this.pageCoordinates.width, 'BlankField_' + this.blankFieldCount.toString(), this.mergeFieldSelection, "", true, ""));
       this.blankFieldCount++;
     }
-    else { this.displayMergeFieldNames.push(new postDataModel(this.element.id, this.rect.x1, this.rect.x2, this.rect.y1, this.rect.y2, this.pageCoordinates.height, this.pageCoordinates.width, concatTedFields, "", "", false, "")); }
-    this.areaInfo.push({
-      rectangleId: this.element.id,
-      pageNumber: this.dataPageNumber,
-      rect: this.rect,
-      isDelete: false,
-      distance: 0
-    });
+    else { this.displayMergeFieldNames.push(new postDataModel(this.element.id, this.rect.x1, this.rect.x2, this.rect.y1, this.rect.y2, this.pageCoordinates.height, this.pageCoordinates.width, concatTedFields, this.mergeFieldSelection, "", false, "")); }
+
     this.showPopup = false;
     this.rect = { x1: 0, y1: 0, x2: 0, y2: 0, width: 0, height: 0 };
   }
@@ -523,12 +507,11 @@ export class AdminComponent implements OnInit {
 
   delete(dataFiled: postDataModel) {
     var toDeleteItems: any = this.extractedData.filter(function (val) { return val.mergeFieldText == dataFiled.mergeFieldText });
-    toDeleteItems.forEach(x => { document.getElementById(x.id).remove() });
+    setTimeout(() => {
+      toDeleteItems.forEach(x => { document.getElementById(x.id).remove() });
+    }, 1000);
     this.displayMergeFieldNames = this.displayMergeFieldNames.filter(function (val) { return val.mergeFieldText != dataFiled.mergeFieldText });
     this.extractedData = this.displayMergeFieldNames;
-
-    // this.areaInfo.find(f => f.rectangleId === dataFiled.id).isDelete = true;
-    // this.areaInfo = this.areaInfo.filter(f => f.isDelete === false);
   }
   moveTo(list: string) {
     if (this.listRectangleId != "") {
@@ -552,6 +535,16 @@ export class AdminComponent implements OnInit {
   }
 
   public onFileChange(event: any) {
+
+    //Reiniitalize Area
+    this.data = "./assets/welocme_pdf.pdf";
+    this.displayMergeFieldNames = [];
+    this.areaInfoInPixels = [];
+    this.sampleDict = [];
+    this.extractedData = [];
+
+
+
     this.showForm = false;
     this.loaderMessage = "Processing Data";
     this.processsingData = true;
@@ -583,19 +576,13 @@ export class AdminComponent implements OnInit {
                     setTimeout(() => {
                     }, 2000);
                     this.setpixels();
+                    this.loaderMessage = "Analyzing Document..."
                     this.httpService
                       .get(
                         "https://y6hl1i714a.execute-api.us-east-1.amazonaws.com/test/ML?id=" +
                         response.TemplateId
                       ).pipe(this.delayedRetry(5000, 8))
                       .subscribe((pythonResponse: any[]) => {
-                        this.loaderMessage = "Analyzing Document..."
-                        // var empIds = ['buyer', 'seller']
-                        // var filteredArray = pythonResponse.filter(function (itm) {
-                        //   return empIds.indexOf(itm.label) > -1;
-                        // });
-                        //  this.sampleDictactedFields = Array.from(new Set(filteredArray.map((item: any) => {item.text, item.label})))
-                        // this.sampleDictactedFields = Array.from(new Set(filteredArray.map((item: any) => item.text)))
                         this.sampleDictactedFields = pythonResponse
                         setTimeout(() => {
                         }, 2000);
@@ -628,14 +615,6 @@ export class AdminComponent implements OnInit {
     return window.btoa(binary);
   }
 
-
-  addFieldToForm() {
-    this.areaInfoInPixels.forEach(x => {
-      if (x.Text == this.mergeFieldName) {
-      }
-    });
-    this.extractedData.push();
-  }
   delayedRetry(delayMs: number, maxRetry = 5) {
     let retries = maxRetry;
     return (src: Observable<any>) => src.pipe(retryWhen((errors: Observable<any>) => errors.pipe(

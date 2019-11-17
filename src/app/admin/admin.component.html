@@ -69,15 +69,16 @@
       </tr>
     </tbody>
   </table>
+
   <div class="uk-flex uk-flex-right uk-button-small uk-margin-small-top">
-    <div [ngClass]="{ 'uk-hidden': !showForm }" class="uk-flex uk-flex-right uk-button-small">
+    <div [ngClass]="{ 'uk-hidden': !showForm  }" class="uk-flex uk-flex-right uk-button-small">
       <button (click)="postData()" class="uk-button uk-button-primary uk-background-primary uk-button-small">
         GENEARATE TEMPLATE
       </button>
     </div>
     <div [ngClass]="{ 'uk-hidden': !confirmationButton }" class="uk-flex uk-flex-right uk-button-small">
       <button (click)="verifyTemplate()" class="uk-button uk-button-primary uk-background-primary uk-button-small">
-       VERIFY TEMPLATE
+        VERIFY TEMPLATE
       </button>
     </div>
     <div [ngClass]="{ 'uk-hidden': !confirmationButton }" class="uk-flex uk-flex-right uk-button-small">
@@ -146,6 +147,10 @@
   <div class="icons">
     <i class="material-icons icon icon-apply" (click)="save()">check_box</i>
     <i class="material-icons icon icon-close" (click)="cancel()">close</i>
+    <select [(ngModel)]="mergeFieldSelection" class="uk-select uk-nav uk-dropdown-nav uk-form-small">
+      <option disabled selected value="">Please Select Merge Field</option>
+      <option *ngFor="let fields of mergeFieldTypes" [value]="fields.FieldName">{{ fields.FieldName }}</option>
+    </select>
   </div>
 </div>
 <!-- JS FILES -->
