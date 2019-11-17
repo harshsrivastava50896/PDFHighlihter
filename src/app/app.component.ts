@@ -9,7 +9,6 @@ import {
 } from "@angular/forms";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { THIS_EXPR, ThrowStmt } from "@angular/compiler/src/output/output_ast";
-import * as json from "../assets/sample3.json";
 import { NgxSpinnerService } from "ngx-spinner";
 import { PDFDocumentProxy } from "pdfjs-dist";
 import { toBase64String } from "@angular/compiler/src/output/source_map"; 

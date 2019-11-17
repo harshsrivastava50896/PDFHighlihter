@@ -3,7 +3,7 @@
     <nav class="uk-navbar uk-light" data-uk-navbar="mode:click; duration: 250">
       <div class="uk-navbar-left">
         <div class="uk-navbar-item">
-          <a class="uk-logo" href="#"><img class="custom-logo" src="assets/dashboard-logo.svg" alt=""></a>
+          <a class="uk-logo" href="#"><img class="custom-logo" src="assets/Logo1.png" alt=""></a>
         </div>
       </div>
       <div class="uk-navbar-right">
@@ -49,14 +49,16 @@
      
     <ul  class="uk-list uk-list-striped">
       <li class="uk-width-1-1 nm uk-text-primary uk-text-uppercase" *ngFor="let order of ordersData  | filter : searchText; let i = index" >
-        <input type="radio" name="TemplateName" value="order.TemplateId" (click)="generate(order)">
-        {{order.TemplateName}}
+        <label >
+          <input type="radio" class="uk-radio" name="TemplateName" value="order.TemplateId" (click)="generate(order)">
+          {{order.TemplateName}}
+        </label>
       </li>
     </ul>
 
     <div *ngIf="!form.valid">At least one order must be selected</div>
     <br>
-    <button (click)="submit()"  class="uk-button uk-margin-large-left uk-button-primary uk-margin-bottom uk-margin-right uk-margin-top">DOWNLOAD</button>
+    <button (click)="submit()"  class="uk-border-rounded uk-button uk-align-center uk-button-primary uk-margin-bottom   uk-margin-top">DOWNLOAD</button>
   </div>
 </aside>
 <div id="content">

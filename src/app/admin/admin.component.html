@@ -3,16 +3,16 @@
     <nav class="uk-navbar uk-light" data-uk-navbar="mode:click; duration: 250">
       <div class="uk-navbar-left">
         <div class="uk-navbar-item">
-          <a class="uk-logo" href="#"><img class="custom-logo" src="assets/dashboard-logo.svg" alt="" /></a>
+          <a class="uk-logo" href="#"><img class="custom-logo" src="assets/Logo1.png" alt="" /></a>
         </div>
       </div>
       <div class="uk-navbar-right">
         <ul class="uk-navbar-nav">
           <li>
-            <a href="#" data-uk-icon="icon:user" title="Your profile" data-uk-tooltip></a>
+            <a [routerLink]="['/user'] " data-uk-icon="icon:user" title="User End" data-uk-tooltip></a>
           </li>
           <li>
-            <a href="#" data-uk-icon="icon: settings" title="Settings" data-uk-tooltip></a>
+            <a [routerLink]="['/admin']" data-uk-icon="icon: settings" title="Admin Portal" data-uk-tooltip></a>
           </li>
           <li>
             <a href="#" data-uk-icon="icon:  sign-out" title="Sign Out" data-uk-tooltip></a>

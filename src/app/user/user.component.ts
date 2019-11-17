@@ -25,6 +25,7 @@ export class UserComponent implements OnInit {
   templateName : string="";
   checked: boolean = false;
   selectedOrderIdss:any;
+  searchText : "";
   
   constructor(
     private httpClient: HttpClient,
@@ -75,7 +76,7 @@ export class UserComponent implements OnInit {
       "Access-Control-Allow-Headers",
       "Content-Type,X-Amz-Date,Authorization,X-Api-Key"
     );
-    headers.append("Access-Control-Allow-Origin", "http://localhost:4200");
+    headers.append("Access-Control-Allow-Origin", "http://techtalk-lfg-demo.s3-website-us-east-1.amazonaws.com/");
     headers.append(
       "Access-Control-Allow-Methods",
       "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT"
@@ -87,7 +88,7 @@ export class UserComponent implements OnInit {
     );
     headersTemplate.append(
       "Access-Control-Allow-Origin",
-      "http://localhost:4200"
+      "http://techtalk-lfg-demo.s3-website-us-east-1.amazonaws.com/"
     );
     headersTemplate.append(
       "Access-Control-Allow-Methods",

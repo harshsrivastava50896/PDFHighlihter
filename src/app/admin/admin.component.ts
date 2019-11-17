@@ -9,7 +9,6 @@ import {
 } from "@angular/forms";
 import { HttpClient, HttpHeaders, HttpErrorResponse } from "@angular/common/http";
 import { THIS_EXPR, ThrowStmt } from "@angular/compiler/src/output/output_ast";
-import * as json from "../../assets/sample3.json";
 import { NgxSpinnerService } from "ngx-spinner";
 import { PDFDocumentProxy } from "pdfjs-dist";
 import { toBase64String } from "@angular/compiler/src/output/source_map";
@@ -139,18 +138,18 @@ export class AdminComponent implements OnInit {
       x.entityType = x.mergeFieldIdentifier;
     });
 
-    this.httpService.post('https://localhost:44382/api/PDFUtil/AddMergeFields?docId=' + this.templateId, { MergeFields: this.displayMergeFieldNames }).subscribe((dataRecived: any) => {
+    this.httpService.post('http://fai-blr02s1136:8090/api/PDFUtil/AddMergeFields?docId=' + this.templateId, { MergeFields: this.displayMergeFieldNames }).subscribe((dataRecived: any) => {
       console.log('data got', dataRecived);
       let headers: HttpHeaders = new HttpHeaders();
       headers = headers.append('Content-Type', 'application/octect-stream');
       headers = headers.append('ResponseType', 'application/json');
       headers.append("Access-Control-Allow-Headers", "Content-Type,X-Amz-Date,Authorization,X-Api-Key");
-      headers.append("Access-Control-Allow-Origin", "http://localhost:4200"); // Remove this and add s3 URL after deploy
+      headers.append("Access-Control-Allow-Origin", "http://techtalk-lfg-demo.s3-website-us-east-1.amazonaws.com/"); // Remove this and add s3 URL after deploy
       headers.append("Access-Control-Allow-Methods", "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT");
 
       let headersForTemplate: HttpHeaders = new HttpHeaders();
       headersForTemplate.append("Access-Control-Allow-Headers", "Content-Type,X-Amz-Date,Authorization,X-Api-Key");
-      headersForTemplate.append("Access-Control-Allow-Origin", "http://localhost:4200"); // Remove this and add s3 URL after deploy
+      headersForTemplate.append("Access-Control-Allow-Origin", "http://techtalk-lfg-demo.s3-website-us-east-1.amazonaws.com/"); // Remove this and add s3 URL after deploy
       headersForTemplate.append("Access-Control-Allow-Methods", "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT");
       this.httpService.post('https://s7qljl48a0.execute-api.us-east-1.amazonaws.com/test/generatetemplate?id=' + this.templateId, null, { headers: headersForTemplate }).subscribe(dataRecived => {
 
@@ -224,7 +223,7 @@ export class AdminComponent implements OnInit {
       "Access-Control-Allow-Headers",
       "Content-Type,X-Amz-Date,Authorization,X-Api-Key"
     );
-    headers.append("Access-Control-Allow-Origin", "http://localhost:4200");
+    headers.append("Access-Control-Allow-Origin", "http://techtalk-lfg-demo.s3-website-us-east-1.amazonaws.com/");
     headers.append(
       "Access-Control-Allow-Methods",
       "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT"
@@ -236,7 +235,7 @@ export class AdminComponent implements OnInit {
     );
     headersTemplate.append(
       "Access-Control-Allow-Origin",
-      "http://localhost:4200"
+      "http://techtalk-lfg-demo.s3-website-us-east-1.amazonaws.com/"
     );
     headersTemplate.append(
       "Access-Control-Allow-Methods",
@@ -599,7 +598,7 @@ export class AdminComponent implements OnInit {
                       });
 
                   });
-              }, 2000);
+              }, 40000);
             });
         };
       }
