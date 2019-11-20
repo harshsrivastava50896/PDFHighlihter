@@ -25,4 +25,7 @@ export class MergeFieldGeneratorService {
   getMergeFieldsNames():Observable<any> {
     return this.httpService.get('https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/dynamodbactivity/sourceDetails');
   }
+  getPdfDetails(templateId : string, templateName : string){
+    return this.httpService.get('https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/s3DownloadPDF?TemplateId='+templateId+'&TemplateName='+templateName);
+  }
 }

@@ -28,17 +28,19 @@
 </header>
 <!--/HEADER-->
 <!-- LEFT BAR -->
-<aside id="left-col" class="uk-light uk-visible@m">
+<aside [ngClass]="{'uk-hidden':showTemplates}" id="left-col" class="uk-light uk-visible@m">
   <div class="left-logo uk-flex uk-flex-middle uk-flex-center uk-margin">
     <img class="custom-logo" src="assets/dashboard-logo2.svg" alt="" />
   </div>
-  <div class="uk-margin uk-flex uk-flex-center" [ngClass]="{ 'uk-hidden': processsingData || !showSelectPdf }">
+  <div class="uk-margin uk-flex uk-flex-center " [ngClass]="{ 'uk-hidden': processsingData || !showSelectPdf }">
     <div uk-form-custom>
       <input (change)="onFileChange($event)" type="file" />
       <button class="uk-button uk-button-default uk-button-small" type="button" tabindex="-1">
         Select PDF
       </button>
+
     </div>
+    <div (click)="showExistingTemplates()" class="uk-margin-left  edit-templates">EDIT TEMPLATES</div>
   </div>
   <div [ngClass]="{ 'uk-hidden': !processsingData }" style="top: 31%;position: relative;" class="uk-text-center">
     <div id="preloader">
@@ -90,6 +92,63 @@
 
 
 </aside>
+
+
+
+
+<aside [ngClass]="{'uk-hidden':!showTemplates}" id="left-col" class="uk-light uk-visible@m">
+  <div class="left-logo uk-flex uk-flex-middle uk-flex-center uk-margin">
+  </div>
+  <div class="uk-margin uk-flex uk-flex-center " [ngClass]="{ 'uk-hidden': processsingData || !showSelectPdf }">
+    <div uk-form-custom>
+      <button (click)="backToMainSection()" class="uk-button uk-button-default uk-button-small" type="button"
+        tabindex="-1">
+        MAIN SECTION
+      </button>
+    </div>
+  </div>
+  <div [ngClass]="{ 'uk-hidden': !processsingData }" style="top: 31%;position: relative;" class="uk-text-center">
+    <div id="preloader">
+      <div id="loader"></div>
+    </div>
+    <p class="uk-margin-remove">{{ loaderMessage }}.....</p>
+  </div>
+  <p [ngClass]="{'uk-hidden': !showTemplatesToBeModified}">Please Select a PDF To modify</p>
+  <ul class="uk-list uk-list-striped" [ngClass]="{'uk-hidden': !showTemplatesToBeModified}">
+    <li class="uk-width-1-1 nm uk-text-primary uk-text-uppercase"
+      *ngFor="let order of ordersData  | filter : searchText; let i = index">
+      <label>
+        <input type="radio" class="uk-radio" name="TemplateName" value="order.TemplateId" (click)="getPDF(order)">
+        {{order.TemplateName}}
+      </label>
+    </li>
+  </ul>
+
+  <table   class="uk-table uk-table-small uk-margin-remove">
+      <thead>
+        <tr>
+          <th>Text Selected</th>
+          <th>Merge Field</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="cursor: pointer;" (click)="moveTo(data.id); $event.stopPropagation()"
+          *ngFor="let data of displayMergeFieldNames; let i = index">
+          <td>{{ data.mergeFieldText }}</td>
+          <td>
+            <select [(ngModel)]="data.mergeFieldIdentifier" class="uk-select uk-nav uk-dropdown-nav uk-form-small">
+              <option disabled selected value="">Please Select Merge Field</option>
+              <option *ngFor="let fields of mergeFieldTypes" [value]="fields.FieldName">{{ fields.FieldName }}</option>
+            </select>
+          </td>
+          <td><span (click)="delete(data)" uk-icon="close"></span></td>
+        </tr>
+      </tbody>
+    </table>
+</aside>
+
+
 <!-- /LEFT BAR -->
 <!-- CONTENT -->
 <div id="content">

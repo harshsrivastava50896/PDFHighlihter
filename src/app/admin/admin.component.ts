@@ -49,6 +49,7 @@ export class AdminComponent implements OnInit {
 
 
   }
+  path: any;
   adminForm: FormGroup;
   myData = ["Date", "Text", "ss"];
   postDataModel: postDataModel[] = [];
@@ -109,6 +110,9 @@ export class AdminComponent implements OnInit {
   mergeFieldSelection: string = "";
   indexCount: number = 1;
 
+  showTemplates: boolean = false;
+  showTemplatesToBeModified: boolean = false;
+  ordersData: any[];
   ngOnInit() {
     this.mergefieldstring = [];
     this.type_field = [];
@@ -138,7 +142,7 @@ export class AdminComponent implements OnInit {
       x.entityType = x.mergeFieldIdentifier;
     });
 
-    this.httpService.post('http://fai-blr02s1136:8090/api/PDFUtil/AddMergeFields?docId=' + this.templateId, { MergeFields: this.displayMergeFieldNames }).subscribe((dataRecived: any) => {
+    this.httpService.post('https://localhost:44382/api/PDFUtil/AddMergeFields?docId=' + this.templateId, { MergeFields: this.displayMergeFieldNames }).subscribe((dataRecived: any) => {
       console.log('data got', dataRecived);
       let headers: HttpHeaders = new HttpHeaders();
       headers = headers.append('Content-Type', 'application/octect-stream');
@@ -361,9 +365,9 @@ export class AdminComponent implements OnInit {
     elem.style.right = 0 + "px";
     elem.style.bottom = 0 + "px";
     elem.style.cursor = "crosshair";
-    const path = this.composedPath(event.target);
+    this.path = this.composedPath(event.target);
 
-    path.find(p => p.className == "page").appendChild(elem);
+    this.path.find(p => p.className == "page").appendChild(elem);
 
     $(".textLayer").addClass("disable-textLayer");
 
@@ -408,7 +412,7 @@ export class AdminComponent implements OnInit {
               rect.style.width = concatedReactangle.width + "px";
               rect.style.height = concatedReactangle.height + "px";
               rect.style.cursor = "pointer";
-              path
+              this.path
                 .find(p => p.className == "page")
                 .children[2].appendChild(rect);
               this.extractedData.push(new postDataModel(element.Id, concatedReactangle.x1, concatedReactangle.x2, concatedReactangle.y1, concatedReactangle.y2, this.pageCoordinates.height,
@@ -418,8 +422,6 @@ export class AdminComponent implements OnInit {
           else if (element.pageNumber == this.indexOfPage && (element.Text.includes(x.text))) {
             if (element.pageNumber == this.indexOfPage) {
               if (typeof element !== undefined) {
-                const rectId =
-                  document.getElementsByClassName("rectangle").length + 1;
                 const rect = document.createElement("div");
                 rect.className = "rectangle";
                 rect.id = element.Id;
@@ -432,7 +434,7 @@ export class AdminComponent implements OnInit {
                 rect.style.height = element.rect.height + "px";
                 rect.style.cursor = "pointer";
                 // get to-draw-rectangle div and add rectangle
-                path
+                this.path
                   .find(p => p.className == "page")
                   .children[2].appendChild(rect);
                 this.extractedData.push(new postDataModel(element.Id, element.rect.x1, element.rect.x2, element.rect.y1, element.rect.y2, this.pageCoordinates.height,
@@ -646,6 +648,70 @@ export class AdminComponent implements OnInit {
     this.showForm = true;
     this.showSelectPdf = false;
     this.confirmationButton = false;
+  }
+
+  showExistingTemplates() {
+    this.showTemplates = !this.showTemplates;
+    this.loaderMessage = "Fetching Templates"
+    this.processsingData = true;
+    this.httpService.get(
+      "https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/dynamodbactivity/getTemplateDetails"
+    ).subscribe((data: any[]) => {
+      console.log(data);
+      this.ordersData = data;
+      this.showTemplatesToBeModified = true;
+      this.processsingData = false;
+    });
+  }
+  backToMainSection() {
+    this.showTemplates = !this.showTemplates;
+  }
+  getPDF(pdfData: any) {
+    this.apiService.getPdfDetails(pdfData.TemplateId, pdfData.TemplateName).pipe(retry(5)).subscribe((response: any) => {
+      console.log(response.pdfData);
+      console.log('template fields', response.TemplateParameter);
+      this.data = this.convertDataURIToBinary(response.pdfData);
+      this.apiService
+        .getDictionaryDetails(pdfData.TemplateId).subscribe(dict => {
+          this.sampleDict = dict.data;
+        });
+      setTimeout(() => {
+        response.TemplateParameter.MergeFields.forEach(x => {
+          this.sampleDict.forEach(item => {
+            if (item.Text == x.mergeFieldText) {
+              const rect = document.createElement("div");
+              rect.className = "rectangle";
+              rect.id = item.Id;
+              rect.style.position = "absolute";
+              rect.style.border = "2px solid #0084FF";
+              rect.style.borderRadius = "3px";
+              rect.style.left = (item.rect.x1 * this.pageCoordinates.width) + "px";
+              rect.style.top = (item.rect.y1 * this.pageCoordinates.height) + "px";
+              rect.style.width = (item.rect.width * this.pageCoordinates.width) + "px";
+              rect.style.height = (item.rect.height * this.pageCoordinates.height) + "px";
+              rect.style.cursor = "pointer";
+              this.path
+                .find(p => p.className == "page")
+                .children[2].appendChild(rect);
+              x.id = item.Id;
+              this.extractedData.push(x);
+            }
+          })
+          this.displayMergeFieldNames.push(x);
+        })
+      }, 3000);
+    })
+
+  }
+
+  convertDataURIToBinary(base64: any) {
+    var binary_string = window.atob(base64);
+    var len = binary_string.length;
+    var bytes = new Uint8Array(len);
+    for (var i = 0; i < len; i++) {
+      bytes[i] = binary_string.charCodeAt(i);
+    }
+    return bytes.buffer;
   }
 }
 
