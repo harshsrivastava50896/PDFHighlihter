@@ -6,6 +6,7 @@ import { UserComponent } from "./user/user.component";
 
 const routes: Routes = [
   { path: "", redirectTo: "/admin", pathMatch: "full" },
+  { path: "/", redirectTo: "/admin", pathMatch: "full" },
   {
     path: "admin",
     component: AdminComponent
