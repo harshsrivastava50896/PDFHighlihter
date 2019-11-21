@@ -70,6 +70,7 @@ export class AdminComponent implements OnInit {
   templateId = "";
   loaderMessage: string = "";
   confirmationButton: boolean = false;
+  addExtraFieldCounter: number = 0;
 
   rect: Rectangle = { x1: 0, y1: 0, x2: 0, y2: 0, width: 0, height: 0 };
   lastMousePosition: Position = { x: 0, y: 0 };
@@ -106,7 +107,7 @@ export class AdminComponent implements OnInit {
   mergeFieldTypes: MergeFieldsNames[] = [];
   blankFieldCount: number = 0;
   displayMergeFieldNames: postDataModel[] = [];
-  allApplications:any[] = [];
+  allApplications: any[] = [];
   showSelectPdf: boolean = true;
   mergeFieldSelection: string = "";
   indexCount: number = 1;
@@ -125,9 +126,9 @@ export class AdminComponent implements OnInit {
       typeOfField: ["", Validators.required],
       radioButton: ["", Validators.required]
     });
-this.apiService.getAllApplications().subscribe((appData:any) => {
-  this.allApplications = appData;
-})
+    this.apiService.getAllApplications().subscribe((appData: any) => {
+      this.allApplications = appData;
+    })
   }
   onResize(event) {
     this.setpixels();
@@ -726,15 +727,15 @@ this.apiService.getAllApplications().subscribe((appData:any) => {
     }
     return bytes.buffer;
   }
-  changeProject(event : any) {
-    if(event !== undefined) {
+  changeProject(event: any) {
+    if (event !== undefined) {
       this.apiService.getMergeFieldsNames(event).subscribe(fields => {
         this.mergeFieldTypes = fields;
       })
     }
   }
   addExtraMergeField() {
-    this.displayMergeFieldNames.push(new postDataModel("rectangle-"+this.indexCount++, 0,0, 0,0, this.pageCoordinates.height, this.pageCoordinates.width, "", "", "", true, ""));
+    this.displayMergeFieldNames.push(new postDataModel("rectangle-" + this.indexCount++, 0, 0, 0, 0, this.pageCoordinates.height, this.pageCoordinates.width, "Enter_Text_" + this.addExtraFieldCounter++, "", "", true, ""));
 
   }
 }
