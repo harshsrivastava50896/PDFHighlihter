@@ -106,6 +106,7 @@ export class AdminComponent implements OnInit {
   mergeFieldTypes: MergeFieldsNames[] = [];
   blankFieldCount: number = 0;
   displayMergeFieldNames: postDataModel[] = [];
+  allApplications:any[] = [];
   showSelectPdf: boolean = true;
   mergeFieldSelection: string = "";
   indexCount: number = 1;
@@ -113,6 +114,7 @@ export class AdminComponent implements OnInit {
   showTemplates: boolean = false;
   showTemplatesToBeModified: boolean = false;
   ordersData: any[];
+  showEditableTemplateData: boolean = false;
   ngOnInit() {
     this.mergefieldstring = [];
     this.type_field = [];
@@ -123,10 +125,9 @@ export class AdminComponent implements OnInit {
       typeOfField: ["", Validators.required],
       radioButton: ["", Validators.required]
     });
-    this.apiService.getMergeFieldsNames().subscribe(fields => {
-      this.mergeFieldTypes = fields;
-    })
-
+this.apiService.getAllApplications().subscribe((appData:any) => {
+  this.allApplications = appData;
+})
   }
   onResize(event) {
     this.setpixels();
@@ -169,6 +170,7 @@ export class AdminComponent implements OnInit {
           this.processsingData = false;
           this.confirmationButton = true;
           this.showSelectPdf = false;
+          this.showEditableTemplateData = false;
         })
       })
 
@@ -648,6 +650,7 @@ export class AdminComponent implements OnInit {
     this.showForm = true;
     this.showSelectPdf = false;
     this.confirmationButton = false;
+    this.showEditableTemplateData = true;
   }
 
   showExistingTemplates() {
@@ -667,6 +670,7 @@ export class AdminComponent implements OnInit {
     this.showTemplates = !this.showTemplates;
   }
   getPDF(pdfData: any) {
+    this.templateId = pdfData.TemplateId;
     this.apiService.getPdfDetails(pdfData.TemplateId, pdfData.TemplateName).pipe(retry(5)).subscribe((response: any) => {
       console.log(response.pdfData);
       console.log('template fields', response.TemplateParameter);
@@ -674,8 +678,15 @@ export class AdminComponent implements OnInit {
       this.apiService
         .getDictionaryDetails(pdfData.TemplateId).subscribe(dict => {
           this.sampleDict = dict.data;
+          setTimeout(() => {
+          }, 2000);
+          this.setpixels();
         });
+      this.showTemplatesToBeModified = false;
+      this.processsingData = true;
+      this.loaderMessage = "Fetching Template Details ....";
       setTimeout(() => {
+
         response.TemplateParameter.MergeFields.forEach(x => {
           this.sampleDict.forEach(item => {
             if (item.Text == x.mergeFieldText) {
@@ -699,7 +710,9 @@ export class AdminComponent implements OnInit {
           })
           this.displayMergeFieldNames.push(x);
         })
-      }, 3000);
+        this.processsingData = false;
+        this.showEditableTemplateData = true;
+      }, 5000);
     })
 
   }
@@ -712,6 +725,17 @@ export class AdminComponent implements OnInit {
       bytes[i] = binary_string.charCodeAt(i);
     }
     return bytes.buffer;
+  }
+  changeProject(event : any) {
+    if(event !== undefined) {
+      this.apiService.getMergeFieldsNames(event).subscribe(fields => {
+        this.mergeFieldTypes = fields;
+      })
+    }
+  }
+  addExtraMergeField() {
+    this.displayMergeFieldNames.push(new postDataModel("rectangle-"+this.indexCount++, 0,0, 0,0, this.pageCoordinates.height, this.pageCoordinates.width, "", "", "", true, ""));
+
   }
 }
 
