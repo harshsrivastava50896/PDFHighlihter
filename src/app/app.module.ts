@@ -12,6 +12,7 @@ import { UserComponent } from './user/user.component';
 import { FilterPipe } from './filter.pipe';
 
 import { LocationStrategy, HashLocationStrategy } from "@angular/common";
+import { ProjectNameComponent } from './admin/admin-project-name/project-name/project-name.component';
 
 @NgModule({
   declarations: [ 
@@ -19,7 +20,8 @@ import { LocationStrategy, HashLocationStrategy } from "@angular/common";
     FormAdminComponent,
     AdminComponent,
     UserComponent,
-    FilterPipe
+    FilterPipe,
+    ProjectNameComponent
 
   ],
   imports: [
