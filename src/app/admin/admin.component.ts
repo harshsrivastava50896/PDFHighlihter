@@ -111,6 +111,7 @@ export class AdminComponent implements OnInit {
   showSelectPdf: boolean = true;
   mergeFieldSelection: string = "";
   indexCount: number = 1;
+  projectName: string = "";
 
   showTemplates: boolean = false;
   showTemplatesToBeModified: boolean = false;
@@ -145,7 +146,7 @@ export class AdminComponent implements OnInit {
     });
     let headers = new HttpHeaders();
     headers = headers.append('content-type', 'application/json');
-    this.httpService.post('https://hwaj48yuj9.execute-api.us-east-1.amazonaws.com/Dev/addmergefields?docID=' + this.templateId, { mergeFields: this.displayMergeFieldNames }, { headers: headers }).subscribe((dataRecived: any) => {
+    this.httpService.post('https://hwaj48yuj9.execute-api.us-east-1.amazonaws.com/Dev/addmergefields?docID=' + this.templateId, { mergeFields: this.displayMergeFieldNames }, { headers: headers }).pipe(this.delayedRetry(10000, 4)).subscribe((dataRecived: any) => {
       console.log('data got', dataRecived);
       let headers: HttpHeaders = new HttpHeaders();
       headers = headers.append('Content-Type', 'application/octect-stream');
@@ -158,7 +159,7 @@ export class AdminComponent implements OnInit {
       headersForTemplate.append("Access-Control-Allow-Headers", "Content-Type,X-Amz-Date,Authorization,X-Api-Key");
       headersForTemplate.append("Access-Control-Allow-Origin", "http://techtalk-lfg-demo.s3-website-us-east-1.amazonaws.com/"); // Remove this and add s3 URL after deploy
       headersForTemplate.append("Access-Control-Allow-Methods", "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT");
-      this.httpService.post('https://s7qljl48a0.execute-api.us-east-1.amazonaws.com/test/generatetemplate?id=' + this.templateId, null, { headers: headersForTemplate }).pipe(this.delayedRetry(10000,4)).subscribe(dataRecived => {
+      this.httpService.post('https://s7qljl48a0.execute-api.us-east-1.amazonaws.com/test/generatetemplate?id=' + this.templateId, null, { headers: headersForTemplate }).pipe(this.delayedRetry(10000, 4)).subscribe(dataRecived => {
 
         this.httpService.post<any>('https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/download', {
           "TemplateId": this.templateId,
@@ -230,7 +231,7 @@ export class AdminComponent implements OnInit {
     );
     var url =
       "https://uo07tg7tf3.execute-api.us-east-1.amazonaws.com/test/mailmerge?id=" +
-      this.templateId;
+      this.templateId + "&app=" + this.projectName;
     this.httpService
       .post<any>(url, null, { headers: headersTemplate })
       .subscribe((response: any) => {
@@ -756,6 +757,7 @@ export class AdminComponent implements OnInit {
     return bytes.buffer;
   }
   changeProject(event: any) {
+    this.projectName = event;
     if (event !== undefined) {
       this.apiService.getMergeFieldsNames(event).subscribe(fields => {
         this.mergeFieldTypes = fields;
