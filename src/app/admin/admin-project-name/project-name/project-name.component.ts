@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-project-name',
@@ -11,23 +11,28 @@ export class ProjectNameComponent implements OnInit {
   private fieldArray: Array<any> = [];
   public projects = [];
   urlSource:any;
+  projectName:string;
   dataLoaded:boolean = false;
-  projectModel:any[];
+  addProj:boolean = false;
+  currentApplication:boolean = false;
+  projectModel:ProjectModel[];
   public s :string = "Hello";
+  currentApplicationDetails = [];
   private newAttribute: any = {};
   urlGetAllApplications:string = 'https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/dynamodbactivity/getAllApplications';
   urlFetchDetails:string = '';
   constructor(private http:HttpClient) { 
     this.projectModel = [];
+    this.http.get(this.urlGetAllApplications).subscribe((x:[]) => {
+      console.log(x);
+      this.projects = x;
+    });
    
   }
 
   ngOnInit() {
     
-    this.http.get(this.urlGetAllApplications).subscribe((x:[]) => {
-      console.log(x);
-      this.projects = x;
-    });
+    
   }
   addFieldValue() {
     this.fieldArray.push(this.newAttribute)
@@ -37,18 +42,42 @@ export class ProjectNameComponent implements OnInit {
 deleteFieldValue(index) {
     this.fieldArray.splice(index, 1);
 }
+addProject(){
+  this.addProj = true;
+}
+getCurrentApplication(index){
+  this.currentApplication = true;
+  var url = 'https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/dynamodbactivity/getSourceDynamodbDetails?Application=' + this.projects[index]; 
+  this.http.get(url).subscribe((x:[])=> {
+    console.log(x);
+    this.currentApplicationDetails = x;
+  })
+
+}
+cancelProject(){
+  this.currentApplication = false;
+}
+getevent(event){
+  console.log(event);
+  this.getCurrentApplication(event);
+}
 fetchDetails(){
-  console.log(this.s);
   
-  this.urlFetchDetails = this.urlFetchDetails.toLowerCase();
+  let headers: HttpHeaders = new HttpHeaders();
+ 
+  headers.append("Access-Control-Allow-Headers", "Content-Type,X-Amz-Date,Authorization,X-Api-Key");
+  headers.append("Access-Control-Allow-Origin", "http://techtalk-lfg-demo.s3-website-us-east-1.amazonaws.com/"); // Remove this and add s3 URL after deploy
+  headers.append("Access-Control-Allow-Methods", "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT");
+  //this.urlFetchDetails = this.urlFetchDetails.toLowerCase();
   console.log(this.urlFetchDetails);
   this.dataLoaded = true;
-  this.http.get(this.urlFetchDetails).subscribe((model:any) =>{
+  this.http.get(this.urlFetchDetails,{headers:headers}).subscribe((model:any) =>{
   console.log(model);
  
    
    
   this.projectModel = model.SourceDetail;
+  
   
  });
   
@@ -57,10 +86,10 @@ fetchDetails(){
 }
 class ProjectModel {
   constructor(){}
-  application: string;
+  Application: string;
   AttributeName: string;
-  fieldName: string;
-  fieldParent: string;
-  sourceLink: string;
+  FieldName: string;
+  FieldParent: string;
+  SourceLink: string;
   
 }
