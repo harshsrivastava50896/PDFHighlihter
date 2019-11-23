@@ -116,6 +116,7 @@ export class AdminComponent implements OnInit {
   showTemplatesToBeModified: boolean = false;
   ordersData: any[];
   showEditableTemplateData: boolean = false;
+  showAutoDectionButton: boolean = false;
   ngOnInit() {
     this.mergefieldstring = [];
     this.type_field = [];
@@ -139,12 +140,12 @@ export class AdminComponent implements OnInit {
     this.showForm = false;
     this.processsingData = true;
     this.loaderMessage = "Generating Template";
-    console.log(this.extractedData);
     this.extractedData.forEach(x => {
       x.entityType = x.mergeFieldIdentifier;
     });
-
-    this.httpService.post('https://localhost:44382/api/PDFUtil/AddMergeFields?docId=' + this.templateId, { MergeFields: this.displayMergeFieldNames }).subscribe((dataRecived: any) => {
+    let headers = new HttpHeaders();
+    headers = headers.append('content-type', 'application/json');
+    this.httpService.post('https://hwaj48yuj9.execute-api.us-east-1.amazonaws.com/Dev/addmergefields?docID=' + this.templateId, { mergeFields: this.displayMergeFieldNames }, { headers: headers }).subscribe((dataRecived: any) => {
       console.log('data got', dataRecived);
       let headers: HttpHeaders = new HttpHeaders();
       headers = headers.append('Content-Type', 'application/octect-stream');
@@ -157,7 +158,7 @@ export class AdminComponent implements OnInit {
       headersForTemplate.append("Access-Control-Allow-Headers", "Content-Type,X-Amz-Date,Authorization,X-Api-Key");
       headersForTemplate.append("Access-Control-Allow-Origin", "http://techtalk-lfg-demo.s3-website-us-east-1.amazonaws.com/"); // Remove this and add s3 URL after deploy
       headersForTemplate.append("Access-Control-Allow-Methods", "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT");
-      this.httpService.post('https://s7qljl48a0.execute-api.us-east-1.amazonaws.com/test/generatetemplate?id=' + this.templateId, null, { headers: headersForTemplate }).subscribe(dataRecived => {
+      this.httpService.post('https://s7qljl48a0.execute-api.us-east-1.amazonaws.com/test/generatetemplate?id=' + this.templateId, null, { headers: headersForTemplate }).pipe(this.delayedRetry(10000,4)).subscribe(dataRecived => {
 
         this.httpService.post<any>('https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/s3activity/download', {
           "TemplateId": this.templateId,
@@ -176,27 +177,6 @@ export class AdminComponent implements OnInit {
       })
 
     })
-  }
-  fieldtype(event) {
-    let Event = event.target.value;
-    for (let i = 0; i < this.extractedData.length; i++) {
-      if (Event != null) {
-        this.type_field.push(Event);
-      }
-      Event = null;
-    }
-    console.log(this.type_field);
-  }
-  radiotype(event) {
-    let Event = event.target.value;
-    for (let i = 0; i < this.extractedData.length; i++) {
-      if (Event != null) {
-        this.radio_type.push(Event);
-      }
-
-      Event = null;
-    }
-    console.log(this.radio_type);
   }
   setpixels() {
     this.sampleDict.forEach(x => {
@@ -482,21 +462,26 @@ export class AdminComponent implements OnInit {
   }
 
   save() {
-
     var concatTedFields = "";
     this.areaInfoInPixels.forEach(x => {
       if (this.findRect(x, this.rect)) {
-        console.log('Threshold', this.rect);
-        console.log('word coordinates', x);
-        console.log(x.Text)
         concatTedFields = concatTedFields + " " + x.Text
+        if (concatTedFields) {
+          concatTedFields = concatTedFields.trim();
+        }
       }
     })
     if (concatTedFields == "") {
       this.displayMergeFieldNames.push(new postDataModel(this.element.id, this.rect.x1, this.rect.x2, this.rect.y1, this.rect.y2, this.pageCoordinates.height, this.pageCoordinates.width, 'BlankField_' + this.blankFieldCount.toString(), this.mergeFieldSelection, "", true, ""));
+      this.extractedData.push(new postDataModel(this.element.id, this.rect.x1, this.rect.x2, this.rect.y1, this.rect.y2, this.pageCoordinates.height, this.pageCoordinates.width, 'BlankField_' + this.blankFieldCount.toString(), this.mergeFieldSelection, "", true, ""));
+
       this.blankFieldCount++;
     }
-    else { this.displayMergeFieldNames.push(new postDataModel(this.element.id, this.rect.x1, this.rect.x2, this.rect.y1, this.rect.y2, this.pageCoordinates.height, this.pageCoordinates.width, concatTedFields, this.mergeFieldSelection, "", false, "")); }
+    else {
+      this.displayMergeFieldNames.push(new postDataModel(this.element.id, this.rect.x1, this.rect.x2, this.rect.y1, this.rect.y2, this.pageCoordinates.height, this.pageCoordinates.width, concatTedFields, this.mergeFieldSelection, "", false, ""));
+      this.extractedData.push(new postDataModel(this.element.id, this.rect.x1, this.rect.x2, this.rect.y1, this.rect.y2, this.pageCoordinates.height, this.pageCoordinates.width, concatTedFields, this.mergeFieldSelection, "", false, ""));
+
+    }
 
     this.showPopup = false;
     this.rect = { x1: 0, y1: 0, x2: 0, y2: 0, width: 0, height: 0 };
@@ -515,7 +500,7 @@ export class AdminComponent implements OnInit {
       toDeleteItems.forEach(x => { document.getElementById(x.id).remove() });
     }, 1000);
     this.displayMergeFieldNames = this.displayMergeFieldNames.filter(function (val) { return val.mergeFieldText != dataFiled.mergeFieldText });
-    this.extractedData = this.displayMergeFieldNames;
+    this.extractedData = Object.assign([], this.displayMergeFieldNames);
   }
   moveTo(list: string) {
     if (this.listRectangleId != "") {
@@ -570,8 +555,18 @@ export class AdminComponent implements OnInit {
               httpOptions
             )
             .subscribe((response: any) => {
-              this.templateId = response.TemplateId
+              this.templateId = response.TemplateId;
+              if (this.file.type === "application/pdf") {
+                this.isPdf = true;
+                this.data = new Uint8Array(e.target.result);
+                this.isDictDataLoaded = true;
+                this.processsingData = false;
+                this.showForm = true;
+              } else {
+                this.isPdf = false;
+              }
               setTimeout(() => {
+
                 this.apiService
                   .getDictionaryDetails(response.TemplateId).pipe(this.delayedRetry(10000, 8))
                   .subscribe((conversion: any) => {
@@ -588,17 +583,18 @@ export class AdminComponent implements OnInit {
                       ).pipe(this.delayedRetry(5000, 8))
                       .subscribe((pythonResponse: any[]) => {
                         this.sampleDictactedFields = pythonResponse
+                        this.showAutoDectionButton = true;
                         setTimeout(() => {
                         }, 2000);
-                        if (this.file.type === "application/pdf") {
-                          this.isPdf = true;
-                          this.data = new Uint8Array(e.target.result);
-                          this.isDictDataLoaded = true;
-                          this.processsingData = false;
-                          this.showForm = true;
-                        } else {
-                          this.isPdf = false;
-                        }
+                        // if (this.file.type === "application/pdf") {
+                        //   this.isPdf = true;
+                        //   this.data = new Uint8Array(e.target.result);
+                        //   this.isDictDataLoaded = true;
+                        //   this.processsingData = false;
+                        //   this.showForm = true;
+                        // } else {
+                        //   this.isPdf = false;
+                        // }
                         error => { this.processsingData = false; console.log('oops', error) }
                       });
 
@@ -608,6 +604,38 @@ export class AdminComponent implements OnInit {
         };
       }
     }
+  }
+  runMlModel() {
+    this.sampleDictactedFields.forEach(x => {
+      this.areaInfoInPixels.forEach(item => {
+        if (item.Text == x.text) {
+          const rect = document.createElement("div");
+          rect.className = "rectangle";
+          rect.id = item.Id;
+          rect.style.position = "absolute";
+          rect.style.border = "2px solid #0084FF";
+          rect.style.borderRadius = "3px";
+          rect.style.left = (item.rect.x1) + "px";
+          rect.style.top = (item.rect.y1) + "px";
+          rect.style.width = (item.rect.width) + "px";
+          rect.style.height = (item.rect.height) + "px";
+          rect.style.cursor = "pointer";
+          this.path
+            .find(p => p.className == "page")
+            .children[2].appendChild(rect);
+          this.extractedData.push(new postDataModel(item.Id, item.rect.x1, item.rect.x2, item.rect.y1, item.rect.y2, this.pageCoordinates.height,
+            this.pageCoordinates.width, item.Text, x.label, "", false, x.label));
+        }
+      })
+
+    })
+    this.extractedData.forEach((item) => {
+      var i = this.displayMergeFieldNames.findIndex(x => x.mergeFieldText == item.mergeFieldText);
+      if (i <= -1) {
+        this.displayMergeFieldNames.push(item);
+      }
+    });
+    this.showAutoDectionButton = false;
   }
   arrayBufferToBase64(buffer) {
     let binary = "";
@@ -705,8 +733,8 @@ export class AdminComponent implements OnInit {
               this.path
                 .find(p => p.className == "page")
                 .children[2].appendChild(rect);
-              x.id = item.Id;
-              this.extractedData.push(x);
+              this.extractedData.push(new postDataModel(item.Id, x.x1, x.x2, x.y1, x.y2, this.pageCoordinates.height,
+                this.pageCoordinates.width, item.Text, x.mergeFieldIdentifier, "", x.isBlankField, x.mergeFieldIdentifier));
             }
           })
           this.displayMergeFieldNames.push(x);

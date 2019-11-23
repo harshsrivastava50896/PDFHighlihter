@@ -63,6 +63,7 @@
   </div>
 
   <table [ngClass]="{ 'uk-hidden': !showForm }" class="uk-table uk-table-small uk-margin-remove">
+    <button [ngClass]="{'uk-hidden': !showAutoDectionButton}" (click)="runMlModel()">Run Auto Detection</button>
     <thead>
       <tr>
         <th>Text Selected</th>
