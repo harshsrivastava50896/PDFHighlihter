@@ -4,6 +4,7 @@ import { FormGroup, FormBuilder, FormArray, FormControl } from "@angular/forms";
 import { of } from "rxjs";
 import { saveAs } from "file-saver";
 import * as mammoth from "mammoth/mammoth.browser.js";
+import { MergeFieldGeneratorService } from "../merge-field-generator.service";
 //import { mammoth } from "../../../node_modules/mammoth/mammoth.browser.js"
 
 // declare var mammoth: any;
@@ -20,16 +21,18 @@ export class UserComponent implements OnInit {
   spinner = true;
   templatemodel: postTemplateModel = new postTemplateModel();
   processsingData: boolean = false;
-  loaderMessage="Loading Templates"
-  showTemplates : boolean = false;
-  templateName : string="";
+  loaderMessage = "Loading Templates"
+  showTemplates: boolean = false;
+  templateName: string = "";
   checked: boolean = false;
-  selectedOrderIdss:any;
-  searchText : "";
-  
+  selectedOrderIdss: any;
+  searchText: "";
+  allApplications: string[] = [];
+  projectName: string = "";
   constructor(
     private httpClient: HttpClient,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private apiService: MergeFieldGeneratorService
   ) {
     this.processsingData = true;
     this.form = this.formBuilder.group({
@@ -38,20 +41,26 @@ export class UserComponent implements OnInit {
     this.sendGetRequest().subscribe((data: any[]) => {
       console.log(data);
       this.ordersData = data;
-     
+
       this.processsingData = false;
-      this.showTemplates= true;
+      this.showTemplates = true;
     });
     this.spinner = false;
 
-   
+
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.apiService.getAllApplications().subscribe((appData: any) => {
+      this.allApplications = appData;
+    })
+  }
 
-  
- 
 
+
+  changeProject(event: any) {
+    this.projectName = event;
+  }
   sendGetRequest() {
     return this.httpClient.get(
       "https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/dynamodbactivity/getTemplateDetails"
@@ -65,8 +74,8 @@ export class UserComponent implements OnInit {
     let selectedOrderIds = this.form.value.orders
       .map((v, i) => (v ? this.ordersData[i].TemplateId : null))
       .filter(v => v !== null);
-      selectedOrderIds = this.selectedOrderIdss;
-    var template  = this.ordersData.filter(x => x.TemplateId == selectedOrderIds);
+    selectedOrderIds = this.selectedOrderIdss;
+    var template = this.ordersData.filter(x => x.TemplateId == selectedOrderIds);
     this.templateName = template[0].TemplateName;
     console.log(selectedOrderIds);
     let headers: HttpHeaders = new HttpHeaders();
@@ -95,11 +104,11 @@ export class UserComponent implements OnInit {
       "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT"
     );
 
- 
+
     var krunalTemplateID = selectedOrderIds;
     var url =
       "https://uo07tg7tf3.execute-api.us-east-1.amazonaws.com/test/mailmerge?id=" +
-      krunalTemplateID;
+      krunalTemplateID + "&app=" + this.projectName;
 
 
     this.httpClient
@@ -121,7 +130,7 @@ export class UserComponent implements OnInit {
             console.log("response", response.data);
             var bytes = new Uint8Array(response.data);
             var blob = new Blob([bytes], { type: "application/octet-stream" });
-            saveAs(blob, this.templateName+"_Mergerd.docx");
+            saveAs(blob, this.templateName + "_Mergerd.docx");
             console.log(bytes);
             mammoth
               .convertToHtml({ arrayBuffer: bytes })
@@ -133,13 +142,13 @@ export class UserComponent implements OnInit {
               .done();
 
           });
-          this.showTemplates = true;
-          this.processsingData = false;
+        this.showTemplates = true;
+        this.processsingData = false;
       });
 
-    
+
   }
-  generate(sss:any){
+  generate(sss: any) {
     this.templateName = sss.TemplateName;
     this.selectedOrderIdss = sss.TemplateId;
     console.log(sss);

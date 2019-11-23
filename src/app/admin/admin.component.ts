@@ -600,7 +600,7 @@ export class AdminComponent implements OnInit {
                       });
 
                   });
-              }, 40000);
+              }, 4000);
             });
         };
       }
@@ -717,7 +717,7 @@ export class AdminComponent implements OnInit {
       this.loaderMessage = "Fetching Template Details ....";
       setTimeout(() => {
 
-        response.TemplateParameter.MergeFields.forEach(x => {
+        response.TemplateParameter.mergeFields.forEach(x => {
           this.sampleDict.forEach(item => {
             if (item.Text == x.mergeFieldText) {
               const rect = document.createElement("div");
