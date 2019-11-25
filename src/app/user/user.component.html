@@ -1,44 +1,44 @@
 <header id="top-head" class="uk-position-fixed">
-    <div class="uk-container uk-container-expand uk-background-primary">
-      <nav class="uk-navbar uk-light" data-uk-navbar="mode:click; duration: 250">
-        <div class="uk-navbar-left">
-          <div class="uk-navbar-item">
-            <a class="uk-logo" href="#"><img class="custom-logo" src="assets/Logo1.png" alt="" /></a>
+  <div class="uk-container uk-container-expand uk-background-primary">
+    <nav class="uk-navbar uk-light" data-uk-navbar="mode:click; duration: 250">
+      <div class="uk-navbar-left">
+        <div class="uk-navbar-item">
+          <a class="uk-logo" href="#"><img class="custom-logo" src="assets/Logo1.png" alt="" /></a>
+        </div>
+      </div>
+      <div class="uk-navbar-right">
+        <div class="uk-margin-right">
+          <div uk-form-custom="target: > * > span:first-child">
+            <select (change)=changeProject($event.target.value)>
+              <option disabled selected value="">Please select...</option>
+              <option *ngFor="let app of allApplications" [value]="app">{{app}}</option>
+            </select>
+            <button class="uk-button uk-button-default" type="button" tabindex="-1">
+              <span></span>
+              <span uk-icon="icon: chevron-down"></span>
+            </button>
           </div>
         </div>
-        <div class="uk-navbar-right">
-          <div class="uk-margin-right">
-            <div uk-form-custom="target: > * > span:first-child">
-              <select (change)=changeProject($event.target.value)>
-                <option disabled selected value="">Please select...</option>
-                <option *ngFor="let app of allApplications" [value]="app">{{app}}</option>
-              </select>
-              <button class="uk-button uk-button-default" type="button" tabindex="-1">
-                <span></span>
-                <span uk-icon="icon: chevron-down"></span>
-              </button>
-            </div>
-          </div>
-          <ul class="uk-navbar-nav">
-            <li>
-              <a [routerLink]="['/user'] " data-uk-icon="icon:user" title="User End" data-uk-tooltip></a>
-            </li>
-            <li>
-              <a [routerLink]="['/admin']" data-uk-icon="icon: settings" title="Admin Portal" data-uk-tooltip></a>
-            </li>
-            <li>
-              <a href="#" data-uk-icon="icon:  sign-out" title="Sign Out" data-uk-tooltip></a>
-            </li>
-            <li>
-              <a class="uk-navbar-toggle" data-uk-toggle data-uk-navbar-toggle-icon href="#offcanvas-nav"
-                title="Offcanvas" data-uk-tooltip></a>
-            </li>
+        <ul class="uk-navbar-nav">
+          <li>
+            <a [routerLink]="['/user'] " data-uk-icon="icon:user" title="End User" data-uk-tooltip></a>
+          </li>
+          <li>
+            <a [routerLink]="['/admin']" data-uk-icon="icon: settings" title="Admin Portal" data-uk-tooltip></a>
+          </li>
+          <li>
+            <a [routerLink]="['/applicationname']" data-uk-icon="icon:  sign-out" title="Add Application" data-uk-tooltip></a>
+          </li>
+          <li>
+            <a class="uk-navbar-toggle" data-uk-toggle data-uk-navbar-toggle-icon href="#offcanvas-nav"
+              title="Offcanvas" data-uk-tooltip></a>
+          </li>
 
-          </ul>
-        </div>
-      </nav>
-    </div>
-  </header>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</header>
 <!--/HEADER-->
 <!-- LEFT BAR -->
 <aside id="left-col" class="uk-light uk-visible@m uk-animation-slide-left">
@@ -47,30 +47,32 @@
   </div>
   <div class="uk-margin uk-flex uk-flex-center">
     <div uk-form-custom>
-      <input  type="file">
+      <input type="file">
       <button class="uk-button uk-button-primary uk-button-small" type="button" tabindex="-1">Your Templates</button>
     </div>
   </div>
   <div *ngIf="(spinner == true)">
-    <div  uk-spinner></div>
+    <div uk-spinner></div>
   </div>
   <div [ngClass]="{'uk-hidden':!processsingData}" style="top: 31%;position: relative;" class="uk-text-center">
     <div id="preloader">
-        <div id="loader"></div>
-      </div>
-  <p class="uk-margin-remove">{{loaderMessage}}</p></div>
+      <div id="loader"></div>
+    </div>
+    <p class="uk-margin-remove">{{loaderMessage}}</p>
+  </div>
 
-  <div  [ngClass]="{'uk-hidden' :!showTemplates}">
-      <div class="uk-margin uk-margin uk-flex uk-flex-center">
-          <div class="uk-search uk-search-default ">
-              <span class="uk-search-icon-flip" uk-search-icon></span>
-              <input [(ngModel)]="searchText" class=" uk-search-input search-uk" type="search" placeholder="Search...">
-          </div>
+  <div [ngClass]="{'uk-hidden' :!showTemplates}">
+    <div class="uk-margin uk-margin uk-flex uk-flex-center">
+      <div class="uk-search uk-search-default ">
+        <span class="uk-search-icon-flip" uk-search-icon></span>
+        <input [(ngModel)]="searchText" class=" uk-search-input search-uk" type="search" placeholder="Search...">
       </div>
+    </div>
 
-    <ul  class="uk-list uk-list-striped">
-      <li class="uk-width-1-1 nm uk-text-primary uk-text-uppercase" *ngFor="let order of ordersData  | filter : searchText; let i = index" >
-        <label >
+    <ul class="uk-list uk-list-striped">
+      <li class="uk-width-1-1 nm uk-text-primary uk-text-uppercase"
+        *ngFor="let order of ordersData  | filter : searchText; let i = index">
+        <label>
           <input type="radio" class="uk-radio" name="TemplateName" value="order.TemplateId" (click)="generate(order)">
           {{order.TemplateName}}
         </label>
@@ -79,11 +81,12 @@
 
     <div *ngIf="!form.valid">At least one order must be selected</div>
     <br>
-    <button (click)="submit()"  class="uk-border-rounded uk-button uk-align-center uk-button-primary uk-margin-bottom   uk-margin-top">DOWNLOAD</button>
+    <button (click)="submit()"
+      class="uk-border-rounded uk-button uk-align-center uk-button-primary uk-margin-bottom   uk-margin-top">DOWNLOAD</button>
   </div>
 </aside>
 <div id="content">
-  <div class="uk-container uk-container-expand"  data-uk-height-viewport="expand: true">
+  <div class="uk-container uk-container-expand" data-uk-height-viewport="expand: true">
     <div id="contentdevere"></div>
   </div>
   <footer class="uk-section uk-section-small uk-text-center">
@@ -91,4 +94,3 @@
     <p class="uk-text-small uk-text-center">Copyright 2019 - First American </p>
   </footer>
 </div>
-

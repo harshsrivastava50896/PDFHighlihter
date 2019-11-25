@@ -9,18 +9,19 @@
       <div class="uk-navbar-right">
         <ul class="uk-navbar-nav">
           <li>
-            <a [routerLink]="['/user'] " data-uk-icon="icon:user" title="User End" data-uk-tooltip></a>
+            <a [routerLink]="['/user'] " data-uk-icon="icon:user" title="End User" data-uk-tooltip></a>
           </li>
           <li>
             <a [routerLink]="['/admin']" data-uk-icon="icon: settings" title="Admin Portal" data-uk-tooltip></a>
           </li>
           <li>
-            <a href="#" data-uk-icon="icon:  sign-out" title="Sign Out" data-uk-tooltip></a>
+            <a [routerLink]="['/applicationname']" data-uk-icon="icon:  sign-out" title="Add Application" data-uk-tooltip></a>
           </li>
           <li>
             <a class="uk-navbar-toggle" data-uk-toggle data-uk-navbar-toggle-icon href="#offcanvas-nav"
               title="Offcanvas" data-uk-tooltip></a>
           </li>
+
         </ul>
       </div>
     </nav>
@@ -166,7 +167,8 @@
     </div>
     <div *ngIf="(dataLoaded)" class="uk-inline">
       <button (click)="addExtraFields()" class="uk-button uk-button-danger">ADD MORE FIELDS</button>
-      <button (click)="submitProjectDetails()" class=" uk-margin-left uk-button uk-button-danger">SUBMIT PROJECT DETAILS</button>
+      <button (click)="submitProjectDetails()" class=" uk-margin-left uk-button uk-button-danger">SUBMIT PROJECT
+        DETAILS</button>
 
     </div>
   </div>

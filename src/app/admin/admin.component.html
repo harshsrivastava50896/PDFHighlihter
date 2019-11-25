@@ -10,8 +10,10 @@
         <div class="uk-margin-right">
           <div uk-form-custom="target: > * > span:first-child">
             <select (change)=changeProject($event.target.value)>
-              <option disabled selected value="">Please select...</option>
-              <option *ngFor="let app of allApplications" [value]="app">{{app}}</option>
+              <option disabled value="">Please select...</option>
+
+
+              <option *ngFor="let app of allApplications" [selected]="LFG" [value]="app">{{app}}</option>
             </select>
             <button class="uk-button uk-button-default" type="button" tabindex="-1">
               <span></span>
@@ -21,13 +23,14 @@
         </div>
         <ul class="uk-navbar-nav">
           <li>
-            <a [routerLink]="['/user'] " data-uk-icon="icon:user" title="User End" data-uk-tooltip></a>
+            <a [routerLink]="['/user'] " data-uk-icon="icon:user" title="End User" data-uk-tooltip></a>
           </li>
           <li>
             <a [routerLink]="['/admin']" data-uk-icon="icon: settings" title="Admin Portal" data-uk-tooltip></a>
           </li>
           <li>
-            <a href="#" data-uk-icon="icon:  sign-out" title="Sign Out" data-uk-tooltip></a>
+            <a [routerLink]="['/applicationname']" data-uk-icon="icon:  sign-out" title="Add Application"
+              data-uk-tooltip></a>
           </li>
           <li>
             <a class="uk-navbar-toggle" data-uk-toggle data-uk-navbar-toggle-icon href="#offcanvas-nav"
@@ -53,10 +56,12 @@
       </button>
 
     </div>
-    <button (click)="showExistingTemplates()" class="uk-margin-left uk-button uk-button-default edit-templates">EDIT TEMPLATES</button>
- 
+    <button (click)="showExistingTemplates()" class="uk-margin-left uk-button uk-button-default edit-templates">EDIT
+      TEMPLATES</button>
+
   </div>
-  <button [ngClass]="{'uk-hidden': !showAutoDectionButton}" class="uk-button uk-button-primary" (click)="runMlModel()">Run Auto Detection</button>
+  <button [ngClass]="{'uk-hidden': !showAutoDectionButton}" class="uk-button uk-button-primary"
+    (click)="runMlModel()">Run Auto Detection</button>
   <div [ngClass]="{ 'uk-hidden': !processsingData }" style="top: 31%;position: relative;" class="uk-text-center">
     <div id="preloader">
       <div id="loader"></div>
@@ -65,7 +70,7 @@
   </div>
 
   <table [ngClass]="{ 'uk-hidden': !showForm }" class="uk-table uk-table-small uk-margin-remove">
-    
+
     <thead>
       <tr>
         <th>Text Selected</th>
@@ -135,8 +140,8 @@
   <ul class="uk-list uk-list-striped" [ngClass]="{'uk-hidden': !showTemplatesToBeModified}">
     <li class="uk-width-1-1 nm uk-text-primary uk-text-uppercase uk-padding-remove" *ngFor="let order of ordersData ">
       <!-- <label> -->
-         <button class="uk-button uk-button-default uk-width-1-1" (click)="getPDF(order)">{{order.TemplateName}}</button>
-        <!-- <input type="radio" class="uk-radio" name="TemplateName" value="order.TemplateId" (click)="getPDF(order)">
+      <button class="uk-button uk-button-default uk-width-1-1" (click)="getPDF(order)">{{order.TemplateName}}</button>
+      <!-- <input type="radio" class="uk-radio" name="TemplateName" value="order.TemplateId" (click)="getPDF(order)">
         {{order.TemplateName}} -->
       <!-- </label> -->
     </li>
