@@ -9,12 +9,11 @@
       <div class="uk-navbar-right">
         <div class="uk-margin-right">
           <div uk-form-custom="target: > * > span:first-child">
-            <select (change)=changeProject($event.target.value)>
-              <option disabled value="">Please select...</option>
+              <select (change)=changeProject($event.target.value)>
+                <option disabled value="">Please select...</option>
+                 <option *ngFor="let app of allApplications" [selected]="LFG" [value]="app">{{app}}</option>
+              </select>
 
-
-              <option *ngFor="let app of allApplications" [selected]="LFG" [value]="app">{{app}}</option>
-            </select>
             <button class="uk-button uk-button-default" type="button" tabindex="-1">
               <span></span>
               <span uk-icon="icon: chevron-down"></span>

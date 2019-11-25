@@ -585,15 +585,6 @@ export class AdminComponent implements OnInit {
                         this.showAutoDectionButton = true;
                         setTimeout(() => {
                         }, 2000);
-                        // if (this.file.type === "application/pdf") {
-                        //   this.isPdf = true;
-                        //   this.data = new Uint8Array(e.target.result);
-                        //   this.isDictDataLoaded = true;
-                        //   this.processsingData = false;
-                        //   this.showForm = true;
-                        // } else {
-                        //   this.isPdf = false;
-                        // }
                         error => { this.processsingData = false; console.log('oops', error) }
                       });
 
