@@ -15,7 +15,8 @@
             <a [routerLink]="['/admin']" data-uk-icon="icon: settings" title="Admin Portal" data-uk-tooltip></a>
           </li>
           <li>
-            <a [routerLink]="['/applicationname']" data-uk-icon="icon:  sign-out" title="Add Application" data-uk-tooltip></a>
+            <a [routerLink]="['/applicationname']" data-uk-icon="icon:  sign-out" title="Add Application"
+              data-uk-tooltip></a>
           </li>
           <li>
             <a class="uk-navbar-toggle" data-uk-toggle data-uk-navbar-toggle-icon href="#offcanvas-nav"
@@ -103,13 +104,13 @@
   <div class="uk-inline uk-width-1-4">
     <button class="uk-button uk-button-default" type="button">Select Project</button>
     <div uk-dropdown="mode: click" class="uk-padding-remove">
-      <ul *ngFor="let project of projects; let i = index" class="uk-list uk-list-striped uk-text-center ">
+      <div *ngFor="let project of projects; let i = index"  class="uk-list uk-list-striped uk-text-center ">
 
         <li (click)="getevent(i)" class="uk-active"><a href="#"></a>{{project}}</li>
 
 
 
-      </ul>
+      </div>
     </div>
 
   </div>
@@ -127,8 +128,8 @@
       <div class="uk-margin-medium-top uk-width-1-1">
         <div *ngFor="let num of currentApplicationDetails">
           <input class="uk-input uk-width-1-3 uk-margin-bottom" [(ngModel)]="num.FieldName" type="text" />
-          <input class="uk-input uk-width-1-3 uk-margin-left uk-margin-bottom" [(ngModel)]="num.SourceLink"
-            type="text" />
+          <!-- <input class="uk-input uk-width-1-3 uk-margin-left uk-margin-bottom" [(ngModel)]="num.SourceLink"
+            type="text" /> -->
         </div>
       </div>
 
@@ -158,13 +159,32 @@
           <div *ngFor="let num of projectModel">
             <input placeholder="Enter Merge Field Name" class="uk-input uk-width-1-3 uk-margin-bottom"
               [(ngModel)]="num.FieldName" type="text" />
-            <input placeholder="Enter Data Source" class="uk-input uk-width-1-3 uk-margin-left uk-margin-bottom"
-              [(ngModel)]="num.SourceLink" type="text" />
+
           </div>
         </div>
 
       </div>
     </div>
+    <div class="uk-inline uk-width-1-2 uk-margin-top uk-margin-bottom">
+      <input class="uk-input " [(ngModel)]="dataSource" type="text" placeholder="Enter your Data Source Link.....">
+    </div>
+    <div class="uk-inline uk-width-1-2 uk-margin-top uk-margin-bottom">
+      <button (click)="fetchUserDetails()" class="uk-button uk-button-primary">VERIFY</button>
+    </div>
+    <!-- <div *ngIf="(userDataLoaded)" style="display: inline-block;" class="uk-inline uk-width-1-1">
+            <div class="uk-container uk-margin-medium-top">
+              <div class="uk-margin-medium-top uk-width-1-1">
+                <div *ngFor="let num of projectModel">
+                  <input placeholder="Enter Merge Field Name" class="uk-input uk-width-1-3 uk-margin-bottom"
+                    [(ngModel)]="num.FieldName" type="text" />
+                    <input placeholder="Enter Merge Field Name" class="uk-input uk-width-1-3 uk-margin-bottom"
+                    [(ngModel)]="num.FieldName" type="text" />
+                 
+                </div>
+              </div>
+      
+            </div>
+        </div> -->
     <div *ngIf="(dataLoaded)" class="uk-inline">
       <button (click)="addExtraFields()" class="uk-button uk-button-danger">ADD MORE FIELDS</button>
       <button (click)="submitProjectDetails()" class=" uk-margin-left uk-button uk-button-danger">SUBMIT PROJECT

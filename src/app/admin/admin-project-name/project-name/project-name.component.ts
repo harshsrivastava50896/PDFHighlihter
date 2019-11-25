@@ -11,6 +11,7 @@ export class ProjectNameComponent implements OnInit {
   private fieldArray: Array<any> = [];
   public projects = [];
   urlSource: any;
+  userDetails:any;
   projectName: string;
   dataLoaded: boolean = false;
   addProj: boolean = false;
@@ -18,8 +19,10 @@ export class ProjectNameComponent implements OnInit {
   currentApplication: boolean = false;
   newProjectForm: boolean = false;
   showAddProjectButton: boolean = true;
+  userDataLoaded:boolean = false;
   projectModel: ProjectModel[];
   public s: string = "Hello";
+  public dataSource:string;
   currentApplicationDetails = [];
   private newAttribute: any = {};
   urlGetAllApplications: string = 'https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/dynamodbactivity/getAllApplications';
@@ -73,6 +76,15 @@ export class ProjectNameComponent implements OnInit {
   getevent(event) {
     console.log(event);
     this.getCurrentApplication(event);
+  }
+  fetchUserDetails(){
+    this.userDataLoaded = true;
+    this.http.get(this.dataSource).subscribe((x:[]) => {
+      console.log(x);
+      
+     this.userDetails = x;
+    });
+
   }
   fetchDetails() {
 
