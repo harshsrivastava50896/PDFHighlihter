@@ -693,7 +693,7 @@ export class AdminComponent implements OnInit {
       rect.style.left = field.rect.x1 * this.pageCoordinates.width + "px";
       rect.style.top = field.rect.y1  * this.pageCoordinates.height+ "px";
       rect.style.width =(field.rect.x2 - field.rect.x1)*this.pageCoordinates.width+ "px";
-      rect.style.height = field.rect.height + "px";
+      rect.style.height = (field.rect.y2 - field.rect.y1)*this.pageCoordinates.height + "px";
       rect.style.cursor = "pointer";
       // get to-draw-rectangle div and add rectangle
       this.path
