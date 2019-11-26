@@ -27,6 +27,10 @@ export class ProjectNameComponent implements OnInit {
   private newAttribute: any = {};
   urlGetAllApplications: string = 'https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/dynamodbactivity/getAllApplications';
   urlFetchDetails: string = '';
+  a: any;
+  finalModel:any = [];
+  filteredDetails:any = [];
+
   constructor(private http: HttpClient) {
     this.projectModel = [];
     this.http.get(this.urlGetAllApplications).subscribe((x: []) => {
@@ -78,12 +82,28 @@ export class ProjectNameComponent implements OnInit {
     this.getCurrentApplication(event);
   }
   fetchUserDetails(){
+    this.fetchDetails();
     this.userDataLoaded = true;
-    this.http.get(this.dataSource).subscribe((x:[]) => {
+    this.http.get(this.dataSource).subscribe((x: any) => {
       console.log(x);
-      
-     this.userDetails = x;
+      this.userDetails = x;
+      this.projectModel.forEach(d => {
+        this.a = this.userDetails.filter(x => x.dataSourceName == d.AttributeName);
+        this.a.forEach(data => {
+          this.filteredDetails.push(data);
+        })
+
+
+
+      });
+      console.log(this.filteredDetails);
+
+
+
+
+
     });
+
 
   }
   fetchDetails() {
