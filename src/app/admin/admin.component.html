@@ -9,10 +9,10 @@
       <div class="uk-navbar-right">
         <div class="uk-margin-right">
           <div uk-form-custom="target: > * > span:first-child">
-              <select (change)=changeProject($event.target.value)>
-                <option disabled value="">Please select...</option>
-                 <option *ngFor="let app of allApplications" [selected]="LFG" [value]="app">{{app}}</option>
-              </select>
+            <select (change)=changeProject($event.target.value)>
+              <option disabled value="">Please select...</option>
+              <option *ngFor="let app of allApplications" [selected]="LFG" [value]="app">{{app}}</option>
+            </select>
 
             <button class="uk-button uk-button-default" type="button" tabindex="-1">
               <span></span>
@@ -49,7 +49,8 @@
   </div>
   <div class="uk-margin uk-flex uk-flex-center " [ngClass]="{ 'uk-hidden': processsingData || !showSelectPdf }">
     <div uk-form-custom>
-      <input type="file" accept="application/pdf" class="uk-button uk-button-default uk-button-small" (change)="onFileChange($event)" type="file" />
+      <input type="file" accept="application/pdf" class="uk-button uk-button-default uk-button-small"
+        (change)="onFileChange($event)" type="file" />
       <button class="uk-button uk-button-default uk-button-small" type="button" tabindex="-1">
         Select PDF
       </button>
@@ -60,8 +61,8 @@
 
   </div>
   <button [ngClass]="{'uk-hidden': !showAutoDectionButton}" class="uk-button uk-button-primary"
-    (click)="runMlModel()">Run Auto Detection</button> <span><button [ngClass]="{'uk-hidden': !showEmptyFieldDetection}" class="uk-button uk-button-primary"
-      (click)="runFieldDetection()">Run Empty Field Detection</button> </span>
+    (click)="runMlModel()">Run Auto Detection</button> <span><button [ngClass]="{'uk-hidden': !showEmptyFieldDetection}"
+      class="uk-button uk-button-primary" (click)="runFieldDetection()">Run Empty Field Detection</button> </span>
   <div [ngClass]="{ 'uk-hidden': !processsingData }" style="top: 31%;position: relative;" class="uk-text-center">
     <div id="preloader">
       <div id="loader"></div>
