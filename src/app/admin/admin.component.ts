@@ -196,7 +196,7 @@ export class AdminComponent implements OnInit {
       this.adminService.GenerateTemplate(this.templateId).pipe(this.delayedRetry(10000, 4)).subscribe(dataRecived => {
         this.adminService.S3Download(this.templateId, constants.S3DocType.TemplateDocx).subscribe((response: any) => {
 
-          this.loaderMessage = "Downloading Template....";
+          this.loaderMessage = "Downloading Template";
           const bytes = new Uint8Array(response.data);
           var blob = new Blob([bytes], { type: 'application/octet-stream' });
           saveAs(blob, this.filename + "_template.docx");
@@ -234,10 +234,10 @@ export class AdminComponent implements OnInit {
    */
   verifyTemplate() {
     this.confirmationButton = false;
-    this.loaderMessage = "Merging Document....";
+    this.loaderMessage = "Merging Document";
     this.processsingData = true;
     this.adminService.MailMerge(this.templateId, this.projectName).subscribe((response: any) => {
-      this.loaderMessage = "Downloading Merged Document...."
+      this.loaderMessage = "Downloading Merged Document"
       this.adminService.S3Download(response, constants.S3DocType.FinalDocx)
         .subscribe((response: any) => {
           var bytes = new Uint8Array(response.data);
@@ -559,7 +559,7 @@ export class AdminComponent implements OnInit {
         reader.readAsArrayBuffer(this.file);
         reader.onload = (e: any) => {
           this.tobase64Data = this.arrayBufferToBase64(reader.result);
-          this.loaderMessage = "Uploading Document.."
+          this.loaderMessage = "Uploading Document"
           this.adminService.S3Upload(this.tobase64Data, this.filename)
             .subscribe((response: any) => {
               this.templateId = response.TemplateId;
@@ -580,7 +580,7 @@ export class AdminComponent implements OnInit {
                     setTimeout(() => {
                     }, 2000);
                     this.CalculateDictInfoInPixels();
-                    this.loaderMessage = "Analyzing Document..."
+                    this.loaderMessage = "Analyzing Document"
                     this.adminService.GenerateMLMap(response.TemplateId).pipe(this.delayedRetry(5000, 8))
                       .subscribe((pythonResponse: any[]) => {
                         this.MLMap = pythonResponse
@@ -793,7 +793,7 @@ export class AdminComponent implements OnInit {
       });
       this.showTemplatesToBeModified = false;
       this.processsingData = true;
-      this.loaderMessage = "Fetching Template Details ....";
+      this.loaderMessage = "Fetching Template Details";
       setTimeout(() => {
 
         response.TemplateParameter.mergeFields.forEach((templateMergeField: MergeFieldContainer) => {

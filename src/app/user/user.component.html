@@ -3,17 +3,17 @@
     <nav class="uk-navbar uk-light" data-uk-navbar="mode:click; duration: 250">
       <div class="uk-navbar-left">
         <div class="uk-navbar-item">
-          <a class="uk-logo" href="#"><img class="custom-logo" src="assets/Logo1.png" alt="" /></a>
+          <a class="uk-logo uk-flex uk-flex-middle" href="#"><img class="custom-logo" src="assets/Logo1.png" alt="" /></a>
         </div>
       </div>
       <div class="uk-navbar-right">
         <div class="uk-margin-right">
           <div uk-form-custom="target: > * > span:first-child">
             <select (change)=changeProject($event.target.value)>
-              <option disabled selected value="">Please select...</option>
+              <option disabled selected value="">Select Project</option>
               <option *ngFor="let app of allApplications" [value]="app">{{app}}</option>
             </select>
-            <button class="uk-button uk-button-default" type="button" tabindex="-1">
+            <button class="uk-button uk-button-top" type="button" tabindex="-1">
               <span></span>
               <span uk-icon="icon: chevron-down"></span>
             </button>
@@ -42,23 +42,34 @@
 <!--/HEADER-->
 <!-- LEFT BAR -->
 <aside id="left-col" class="uk-light uk-visible@m uk-animation-slide-left">
-  <div class="left-logo uk-flex uk-flex-middle uk-flex-center uk-margin">
-    <img class="custom-logo" src="assets/dashboard-logo2.svg" alt="">
-  </div>
   <div class="uk-margin uk-flex uk-flex-center">
     <div uk-form-custom>
       <input type="file">
-      <button class="uk-button uk-button-primary uk-button-small" type="button" tabindex="-1">Your Templates</button>
+      <button class="uk-button uk-button-default uk-button-small" type="button" tabindex="-1">Your Templates</button>
     </div>
   </div>
   <div *ngIf="(spinner == true)">
-    <div uk-spinner></div>
-  </div>
-  <div [ngClass]="{'uk-hidden':!processsingData}" style="top: 31%;position: relative;" class="uk-text-center">
-    <div id="preloader">
-      <div id="loader"></div>
+    <div class="ocrloader">
+      <em></em>
+      <div>
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i>
+      </div>
+      <span></span>
     </div>
-    <p class="uk-margin-remove">{{loaderMessage}}</p>
+  </div>
+  <div *ngIf="processsingData">
+    <div class="ocrloader">
+      <em></em>
+      <div>
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i>
+      </div>
+      <span></span>
+    </div>
+    <p class="uk-margin-remove loader-text">{{loaderMessage}}</p>
   </div>
 
   <div *ngIf="showTemplates">
@@ -79,9 +90,8 @@
     </ul>
 
     <div *ngIf="!form.valid">At least one order must be selected</div>
-    <br>
     <button (click)="submit()"
-      class="uk-border-rounded uk-button uk-align-center uk-button-primary uk-margin-bottom uk-margin-top">Download</button>
+      class="uk-border-rounded uk-button uk-button-small uk-align-center uk-button-primary uk-margin-bottom uk-margin-top">Download</button>
   </div>
 </aside>
 <div id="content">

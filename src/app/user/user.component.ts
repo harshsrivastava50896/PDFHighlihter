@@ -69,7 +69,7 @@ export class UserComponent implements OnInit {
 
   submit() {
     this.showTemplates = false;
-    this.loaderMessage = "Downloading Merged Document.....";
+    this.loaderMessage = "Downloading Merged Document";
     this.processsingData = true;
     let selectedOrderIds = this.form.value.orders
       .map((v, i) => (v ? this.ordersData[i].TemplateId : null))

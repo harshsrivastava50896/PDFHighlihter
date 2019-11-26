@@ -261,6 +261,14 @@ select.uk-form-small:not(textarea):not([multiple]):not([size]){
 	transform: translate(-50%, -50%);
 	backface-visibility: hidden;
   }
+.loader-text{
+	position: absolute;
+	top: 50%;
+	width: 100%;
+	padding-top: 50px;
+	text-align: center;
+}
+
   .ocrloader span {
 	position: absolute;
 	left: 0;
