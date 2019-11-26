@@ -9,7 +9,7 @@
       <div class="uk-navbar-right">
         <div class="uk-margin-right">
           <div uk-form-custom="target: > * > span:first-child">
-            <select (change)=changeProject($event.target.value)>
+            <select [(ngModel)]="projectName" (change)=changeProject($event.target.value)>
               <option disabled selected value="">Select Project</option>
               <option *ngFor="let app of allApplications" [value]="app">{{app}}</option>
             </select>

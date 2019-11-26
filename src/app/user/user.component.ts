@@ -53,6 +53,7 @@ export class UserComponent implements OnInit {
   ngOnInit() {
     this.apiService.getAllApplications().subscribe((appData: any) => {
       this.allApplications = appData;
+      this.projectName = appData[0];
     })
   }
 

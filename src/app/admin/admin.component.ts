@@ -172,6 +172,7 @@ export class AdminComponent implements OnInit {
     });
     this.adminService.GetAllApplications().subscribe((appData: any) => {
       this.allApplications = appData;
+      this.projectName = appData[0];
     })
   }
 
