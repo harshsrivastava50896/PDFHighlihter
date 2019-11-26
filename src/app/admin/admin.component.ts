@@ -77,6 +77,7 @@ export class AdminComponent implements OnInit {
   mergeFieldTypes: MergeFieldsNames[];
   blankFieldCount: number;
   MergeFieldsSelectedList: MergeFieldContainer[];
+  blankFieldsContainer: MergeFieldContainer[] =[];
   allApplications: any[];
   showSelectPdf: boolean;
   mergeFieldSelection: string;
@@ -585,6 +586,11 @@ export class AdminComponent implements OnInit {
                         this.showAutoDectionButton = true;
                         setTimeout(() => {
                         }, 2000);
+                        this.adminService.S3Download(response.TemplateId, constants.S3DocType.BlankField).pipe(this.delayedRetry(5000, 8)).subscribe((blanKFields : MergeFieldContainer) => {
+                          this.blankFieldsContainer.push(blanKFields)
+                        })
+                        console.log('blank fields',this.blankFieldsContainer);
+                        
                         error => { this.processsingData = false; console.log('oops', error) }
                       });
 
