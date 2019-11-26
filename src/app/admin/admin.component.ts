@@ -77,7 +77,7 @@ export class AdminComponent implements OnInit {
   mergeFieldTypes: MergeFieldsNames[];
   blankFieldCount: number;
   MergeFieldsSelectedList: MergeFieldContainer[];
-  blankFieldsContainer: MergeFieldContainer[] =[];
+  blankFieldsContainer: AreaInfo[] =[];
   allApplications: any[];
   showSelectPdf: boolean;
   mergeFieldSelection: string;
@@ -586,8 +586,10 @@ export class AdminComponent implements OnInit {
                         this.showAutoDectionButton = true;
                         setTimeout(() => {
                         }, 2000);
-                        this.adminService.S3Download(response.TemplateId, constants.S3DocType.BlankField).pipe(this.delayedRetry(5000, 8)).subscribe((blanKFields : MergeFieldContainer) => {
-                          this.blankFieldsContainer.push(blanKFields)
+
+                        // To get blank fields
+                        this.adminService.S3Download(response.TemplateId, constants.S3DocType.BlankField).pipe(this.delayedRetry(5000, 8)).subscribe((blanKFields : any) => {
+                          blanKFields.data.forEach(fieldData=> this.blankFieldsContainer.push(fieldData))
                         })
                         console.log('blank fields',this.blankFieldsContainer);
                         
@@ -678,6 +680,28 @@ export class AdminComponent implements OnInit {
       }
     });
     this.showAutoDectionButton = false;
+  }
+
+  runFieldDetection() {
+    this.blankFieldsContainer.forEach(field => {
+      const rect = document.createElement("div");
+      rect.className = "rectangle";
+      rect.id = field.rectangleId;
+      rect.style.position = "absolute";
+      rect.style.border = "2px solid #0084FF";
+      rect.style.borderRadius = "3px";
+      rect.style.left = field.rect.x1 * this.pageCoordinates.width + "px";
+      rect.style.top = field.rect.y1  * this.pageCoordinates.height+ "px";
+      rect.style.width =(field.rect.x2 - field.rect.x1)*this.pageCoordinates.width+ "px";
+      rect.style.height = field.rect.height + "px";
+      rect.style.cursor = "pointer";
+      // get to-draw-rectangle div and add rectangle
+      this.path
+        .find(p => p.className == "page")
+        .children[2].appendChild(rect);
+      this.HighlightedFields.push(new MergeFieldContainer(field.Id, field.rect.x1, field.rect.x2, field.rect.y1, field.rect.y2, this.pageCoordinates.height,
+        this.pageCoordinates.width, field.Text, "", "", true, ""));
+    })
   }
   arrayBufferToBase64(buffer) {
     let binary = "";

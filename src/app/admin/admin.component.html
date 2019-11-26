@@ -49,7 +49,7 @@
   </div>
   <div class="uk-margin uk-flex uk-flex-center " [ngClass]="{ 'uk-hidden': processsingData || !showSelectPdf }">
     <div uk-form-custom>
-      <input class="uk-button uk-button-default uk-button-small" (change)="onFileChange($event)" type="file" />
+      <input type="file" accept="application/pdf" class="uk-button uk-button-default uk-button-small" (change)="onFileChange($event)" type="file" />
       <button class="uk-button uk-button-default uk-button-small" type="button" tabindex="-1">
         Select PDF
       </button>
