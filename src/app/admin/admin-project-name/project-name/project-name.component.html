@@ -3,7 +3,7 @@
     <nav class="uk-navbar uk-light" data-uk-navbar="mode:click; duration: 250">
       <div class="uk-navbar-left">
         <div class="uk-navbar-item">
-          <a class="uk-logo" href="#"><img class="custom-logo" src="assets/Logo1.png" alt="" /></a>
+          <a class="uk-logo uk-flex uk-flex-middle" href="#"><img class="custom-logo" src="assets/Logo1.png" alt="" /></a>
         </div>
       </div>
       <div class="uk-navbar-right">
@@ -30,23 +30,22 @@
 </header>
 
 <div class="uk-container uk-margin-large-top">
-  <div class="uk-inline uk-width-1-4 pointer" [ngClass]="{'uk-hidden': !showAddProjectButton }">
-    <button class="uk-button uk-button-default" type="button">Select Project</button>
-    <div uk-dropdown="mode: click" class="uk-padding-remove">
-      <div *ngFor="let project of projects; let i = index" class="uk-list uk-list-striped uk-text-center ">
-        <li (click)="getevent(i)" class="uk-active"><a href="#"></a>{{project}}</li> 
+  <div class="uk-flex uk-width-1-1">
+    <div class="uk-flex">
+      <div *ngIf="showAddProjectButton">
+        <button class="uk-button uk-button-small uk-button-primary uk-border-rounded" type="button">Select Project <span uk-icon="icon:  triangle-down"></span></button>
+        <div uk-dropdown="mode: click">
+          <ul class="uk-nav uk-dropdown-nav">
+            <li *ngFor="let project of projects; let i = index" class="uk-active"><a (click)="getevent(i)">{{project}}</a></li> 
+          </ul>
+        </div>
       </div>
+      <button *ngIf="(currentApplication)" (click)="cancelProject()" class="uk-button uk-button-small uk-button-secondary uk-border-rounded uk-margin-left">Cancel</button>
     </div>
-
-  </div>
-  <div *ngIf="(currentApplication)" class="uk-inline uk-width-1-4">
-    <button (click)="cancelProject()" class="uk-button uk-button-primary">Cancel</button>
-  </div>
-  <div *ngIf="(!showAddProjectButton)" class="uk-inline uk-width-1-4">
-    <button (click)="cancelNewProjectAddition()" class="uk-button uk-button-primary">Cancel</button>
-  </div>
-  <div [ngClass]="{'uk-hidden': !showAddProjectButton || currentApplication}" class="uk-inline uk-width-1-4">
-    <button (click)="addProject()" class="uk-button uk-button-primary">ADD PROJECT</button>
+    <div class="uk-flex uk-margin-auto-left">
+        <button (click)="addProject()" [ngClass]="{'uk-hidden': !showAddProjectButton || currentApplication}" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Add Project</button>
+        <button *ngIf="(!showAddProjectButton)" (click)="cancelNewProjectAddition()" class="uk-button uk-button-small uk-button-secondary uk-border-rounded uk-margin-left">Cancel</button>
+    </div>
   </div>
   <!-- <div *ngIf="(currentApplication)">
     <div class="uk-container uk-margin-medium-top">
@@ -59,49 +58,48 @@
 
     </div>
   </div> -->
-  <table *ngIf="(currentApplication)" class="uk-table uk-table-striped uk-width-1-3">
-    <thead>
-        <tr>
-            <th>MergeField Name</th>
-            
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let detail of currentApplicationDetails">
-            <td>{{detail.FieldName}}</td>
-           
-            
-       
-    </tbody>
-</table>
-
-  <div *ngIf="(addProj)">
-    <div class="uk-width-1-1 uk-margin-top">
-      <div class="uk-width-1-2 uk-text-large	uk-text-bold uk-inline">
-        PROJECT NAME
-      </div>
-      <div class="uk-inline uk-width-1-2">
-        <input class="uk-input " [(ngModel)]="projectName" type="text" placeholder="Enter your Project Name.....">
-      </div>
-    </div>
-    <div class="uk-width-1-1 uk-margin-top">
-      <div class="uk-inline uk-width-1-2">
-        <input class="uk-input " [(ngModel)]="urlFetchDetails" type="text"
-          placeholder="Enter your Project Source Link.....">
-      </div>
-      <!-- <div class="uk-inline uk-width-1-2">
-        <button (click)="fetchDetails()" class="uk-button uk-button-primary">FETCH DETAILS</button>
-      </div> -->
-    </div>
-    <div class="uk-width-1-1 uk-margin-top">
-        <div class="uk-inline uk-width-1-2">
-          <input class="uk-input " [(ngModel)]="dataSource" type="text"
-          placeholder="Enter your Data Source Link.....">
-        </div>
-        <div class="uk-inline uk-width-1-2">
-          <button (click)="fetchUserDetails()" class="uk-button uk-button-primary">GET DATA SOURCE</button>
+  <h2 *ngIf="(currentApplication)">Merge Field Name</h2>
+  <div class="uk-card uk-card-small uk-border-rounded uk-box-shadow-large uk-card-default uk-card-body" *ngIf="(currentApplication)">
+      <div class="uk-child-width-1-4@m uk-grid-small uk-grid-match" uk-grid>
+        <div *ngFor="let detail of currentApplicationDetails">
+            <h3 class="uk-card-title">{{detail.FieldName}}</h3>
         </div>
       </div>
+  </div>
+  <div *ngIf="(addProj)" class="uk-form-stacked">
+      <h2>
+        Add New Project
+      </h2>
+      <div class="uk-width-1-2">
+          <div class="uk-margin">
+              <label class="uk-form-label">Project Name</label>
+              <div class="uk-form-controls">
+                  <input class="uk-input uk-form-small" [(ngModel)]="projectName" type="text" placeholder="Enter your Project Name">
+              </div>
+          </div>
+      </div>
+      <div class="uk-width-1-2">
+          <div class="uk-margin">
+              <label class="uk-form-label">Project Source Link</label>
+              <div class="uk-form-controls">
+                  <input class="uk-input uk-form-small" [(ngModel)]="urlFetchDetails" type="text" placeholder="Enter your Project Source Link">
+              </div>
+          </div>
+      </div>
+      <div class="uk-flex uk-flex-bottom">
+          <div class="uk-width-1-2">
+              <div>
+                  <label class="uk-form-label">Data Source Link</label>
+                  <div class="uk-form-controls">
+                      <input class="uk-input uk-form-small" [(ngModel)]="dataSource" type="text" placeholder="Enter your Data Source Link">
+                  </div>
+              </div>
+          </div>
+          <div class="uk-width-1-2">
+              <button (click)="fetchUserDetails()" class="uk-button uk-button-small uk-button-primary">Get Data Source</button>
+          </div>
+      </div>
+      
     <!-- <div class="uk-inline uk-width-1-2 uk-margin-top uk-margin-bottom">
       <input class="uk-input " [(ngModel)]="dataSource" type="text" placeholder="Enter your Data Source Link.....">
     </div> -->
@@ -150,8 +148,7 @@
         </div> -->
     <div *ngIf="(dataLoaded)" class="uk-inline">
       <!-- <button (click)="addExtraFields()" class="uk-button uk-button-danger">ADD MORE FIELDS</button> -->
-      <button (click)="submitProjectDetails()" class=" uk-margin-left uk-button uk-button-danger">SUBMIT PROJECT
-        DETAILS</button>
+      <button (click)="submitProjectDetails()" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Submit Project Details</button>
 
     </div>
   </div>
