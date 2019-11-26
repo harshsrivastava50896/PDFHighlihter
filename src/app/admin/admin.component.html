@@ -46,7 +46,7 @@
 <aside [ngClass]="{'uk-hidden':showTemplates}" id="left-col" class="uk-light uk-visible@m">
   <div class="uk-margin uk-flex uk-flex-center " [ngClass]="{ 'uk-hidden': processsingData || !showSelectPdf }">
     <div uk-form-custom>
-      <input class="uk-button uk-button-default uk-button-small" (change)="onFileChange($event)" type="file" />
+      <input type="file" accept="application/pdf" class="uk-button uk-button-default uk-button-small" (change)="onFileChange($event)" type="file" />
       <button class="uk-button uk-button-default uk-button-small" type="button" tabindex="-1">
         Select PDF
       </button>
@@ -55,16 +55,19 @@
     <button *ngIf="showAutoDectionButton" class="uk-button uk-button-primary uk-background-primary uk-button-small uk-margin-left"  (click)="runMlModel()">Run Auto Detection</button>
   </div>
   
-  <div [ngClass]="{ 'uk-hidden': !processsingData }" class="uk-text-center">
-    <div class="ocrloader">
-      <em></em>
-      <div>
-        <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-        <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-        <i></i><i></i><i></i>
-      </div>
-      <span></span>
-    </div>
+  
+  <button *ngIf="showAutoDectionButton" class="uk-button uk-button-primary uk-background-primary uk-button-small" (click)="runMlModel()">Run Auto Detection</button>
+  <button **ngIf="showEmptyFieldDetection" class="uk-button uk-button-primary uk-background-primary uk-button-small uk-margin-left" (click)="runFieldDetection()">Run Empty Field Detection</button> 
+      <div *ngIf="processsingData">
+        <div class="ocrloader">
+          <em></em>
+          <div>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i>
+          </div>
+          <span></span>
+        </div>
     <p class="uk-margin-remove">{{ loaderMessage }}.....</p>
   </div>
 
