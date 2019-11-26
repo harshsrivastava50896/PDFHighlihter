@@ -57,7 +57,7 @@
   
   
   <button *ngIf="showAutoDectionButton" class="uk-button uk-button-primary uk-background-primary uk-button-small" (click)="runMlModel()">Run Auto Detection</button>
-  <button **ngIf="showEmptyFieldDetection" class="uk-button uk-button-primary uk-background-primary uk-button-small uk-margin-left" (click)="runFieldDetection()">Run Empty Field Detection</button> 
+  <button *ngIf="showEmptyFieldDetection" class="uk-button uk-button-primary uk-background-primary uk-button-small uk-margin-left" (click)="runFieldDetection()">Run Empty Field Detection</button> 
       <div *ngIf="processsingData">
         <div class="ocrloader">
           <em></em>
