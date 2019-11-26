@@ -60,7 +60,8 @@
 
   </div>
   <button [ngClass]="{'uk-hidden': !showAutoDectionButton}" class="uk-button uk-button-primary"
-    (click)="runMlModel()">Run Auto Detection</button>
+    (click)="runMlModel()">Run Auto Detection</button> <span><button [ngClass]="{'uk-hidden': !showEmptyFieldDetection}" class="uk-button uk-button-primary"
+      (click)="runFieldDetection()">Run Empty Field Detection</button> </span>
   <div [ngClass]="{ 'uk-hidden': !processsingData }" style="top: 31%;position: relative;" class="uk-text-center">
     <div id="preloader">
       <div id="loader"></div>

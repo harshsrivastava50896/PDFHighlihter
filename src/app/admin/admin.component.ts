@@ -77,7 +77,7 @@ export class AdminComponent implements OnInit {
   mergeFieldTypes: MergeFieldsNames[];
   blankFieldCount: number;
   MergeFieldsSelectedList: MergeFieldContainer[];
-  blankFieldsContainer: AreaInfo[] =[];
+  blankFieldsContainer: AreaInfo[] = [];
   allApplications: any[];
   showSelectPdf: boolean;
   mergeFieldSelection: string;
@@ -89,6 +89,7 @@ export class AdminComponent implements OnInit {
   ordersData: any[];
   showEditableTemplateData: boolean = false;
   showAutoDectionButton: boolean = false;
+  showEmptyFieldDetection: boolean = false;
 
 
 
@@ -588,11 +589,10 @@ export class AdminComponent implements OnInit {
                         }, 2000);
 
                         // To get blank fields
-                        this.adminService.S3Download(response.TemplateId, constants.S3DocType.BlankField).pipe(this.delayedRetry(5000, 8)).subscribe((blanKFields : any) => {
-                          blanKFields.data.forEach(fieldData=> this.blankFieldsContainer.push(fieldData))
+                        this.adminService.S3Download(response.TemplateId, constants.S3DocType.BlankField).pipe(this.delayedRetry(5000, 8)).subscribe((blanKFields: any) => {
+                          blanKFields.data.forEach(fieldData => this.blankFieldsContainer.push(fieldData))
                         })
-                        console.log('blank fields',this.blankFieldsContainer);
-                        
+                        this.showEmptyFieldDetection = true;
                         error => { this.processsingData = false; console.log('oops', error) }
                       });
 
@@ -691,17 +691,24 @@ export class AdminComponent implements OnInit {
       rect.style.border = "2px solid #0084FF";
       rect.style.borderRadius = "3px";
       rect.style.left = field.rect.x1 * this.pageCoordinates.width + "px";
-      rect.style.top = field.rect.y1  * this.pageCoordinates.height+ "px";
-      rect.style.width =(field.rect.x2 - field.rect.x1)*this.pageCoordinates.width+ "px";
-      rect.style.height = (field.rect.y2 - field.rect.y1)*this.pageCoordinates.height + "px";
+      rect.style.top = field.rect.y1 * this.pageCoordinates.height + "px";
+      rect.style.width = (field.rect.x2 - field.rect.x1) * this.pageCoordinates.width + "px";
+      rect.style.height = (field.rect.y2 - field.rect.y1) * this.pageCoordinates.height + "px";
       rect.style.cursor = "pointer";
       // get to-draw-rectangle div and add rectangle
       this.path
         .find(p => p.className == "page")
         .children[2].appendChild(rect);
-      this.HighlightedFields.push(new MergeFieldContainer(field.Id, field.rect.x1, field.rect.x2, field.rect.y1, field.rect.y2, this.pageCoordinates.height,
-        this.pageCoordinates.width, field.Text, "", "", true, ""));
+      this.HighlightedFields.push(new MergeFieldContainer(field.rectangleId, field.rect.x1 * this.pageCoordinates.width, field.rect.x2 * this.pageCoordinates.width, field.rect.y1 * this.pageCoordinates.height, field.rect.y2* this.pageCoordinates.height, this.pageCoordinates.height,
+        this.pageCoordinates.width, 'Blank Field' + ' ' + this.indexCount++, "", "", true, ""));
+      this.showEmptyFieldDetection = false;
     })
+    this.HighlightedFields.forEach((highlightedItem) => {
+      var i = this.MergeFieldsSelectedList.findIndex(selectedListItem => selectedListItem.mergeFieldText == highlightedItem.mergeFieldText);
+      if (i <= -1) {
+        this.MergeFieldsSelectedList.push(highlightedItem);
+      }
+    });
   }
   arrayBufferToBase64(buffer) {
     let binary = "";
