@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ThrowStmt } from '@angular/compiler';
 
 @Component({
   selector: 'app-project-name',
@@ -11,7 +12,7 @@ export class ProjectNameComponent implements OnInit {
   private fieldArray: Array<any> = [];
   public projects = [];
   urlSource: any;
-  userDetails:any;
+  userDetails: any;
   projectName: string;
   dataLoaded: boolean = false;
   addProj: boolean = false;
@@ -19,10 +20,13 @@ export class ProjectNameComponent implements OnInit {
   currentApplication: boolean = false;
   newProjectForm: boolean = false;
   showAddProjectButton: boolean = true;
-  userDataLoaded:boolean = false;
+  userDataLoaded: boolean = false;
   projectModel: ProjectModel[];
   public s: string = "Hello";
-  public dataSource:string;
+  public dataSource: string;
+  a: any;
+  finalModel:any = [];
+  filteredDetails:any = [];
   currentApplicationDetails = [];
   private newAttribute: any = {};
   urlGetAllApplications: string = 'https://um34zvea5c.execute-api.us-east-1.amazonaws.com/dev/dynamodbactivity/getAllApplications';
@@ -77,14 +81,59 @@ export class ProjectNameComponent implements OnInit {
     console.log(event);
     this.getCurrentApplication(event);
   }
-  fetchUserDetails(){
-    this.userDataLoaded = true;
-    this.http.get(this.dataSource).subscribe((x:[]) => {
-      console.log(x);
-      
-     this.userDetails = x;
-    });
+  fetchUserDetails() {
+    // var b = [{
+    //   "dataSourceName": "BuyerAddress",
+    //   "dataSourceValue": "Seattle, Washington"
+    // },
+    // {
+    //   "dataSourceName": "SellerName",
+    //   "dataSourceValue": "sdssafdasdsdad"
+    // },
 
+    // {
+    //   "dataSourceName": "SellerAddress",
+    //   "dataSourceValue": "Chicago, Illinoi"
+    // },
+    // {
+    //   "dataSourceName": "SellerPhone",
+    //   "dataSourceValue": "55555588558"
+    // },
+    // {
+    //   "dataSourceName": "BuyerName",
+    //   "dataSourceValue": "Joe Diep"
+    // },
+    // {
+    //   "dataSourceName": "BuyerPhone",
+    //   "dataSourceValue": "4444444444"
+    // }
+
+
+    // ]
+    this.fetchDetails();
+    this.userDataLoaded = true;
+    this.http.get(this.dataSource).subscribe((x: any) => {
+      console.log(x);
+      this.userDetails = x;
+      this.projectModel.forEach(d => {
+        this.a = this.userDetails.filter(x => x.dataSourceName == d.AttributeName);
+        this.a.forEach(data => {
+          this.filteredDetails.push(data);
+        })
+       
+
+        
+      });
+      console.log(this.filteredDetails);
+      
+      
+
+     
+
+    });
+  
+   
+    
   }
   fetchDetails() {
 
