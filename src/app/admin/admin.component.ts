@@ -569,6 +569,13 @@ export class AdminComponent implements OnInit {
                 this.isDictDataLoaded = true;
                 this.processsingData = false;
                 this.showForm = true;
+                setTimeout(() => {
+                  this.pageCoordinates = document
+                    .getElementById("page1")
+                    .getBoundingClientRect();
+                  this.CalculateDictInfoInPixels();
+                  console.log("area gage", this.pageCoordinates);
+                }, 1000);
               } else {
                 this.isPdf = false;
               }
