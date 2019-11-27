@@ -83,15 +83,15 @@
     <ul class="uk-list uk-list-striped">
       <li *ngFor="let order of ordersData  | filter : searchText; let i = index">
         <label>
-          <input type="radio" class="uk-radio" name="TemplateName" value="order.TemplateId" (click)="generate(order)">
-          {{order.TemplateName}}
+          <!-- <input type="radio" class="uk-radio" name="TemplateName" value="order.TemplateId" (click)="generate(order)"> -->
+          {{order.TemplateName}} 
+          <button  (click)="generate(order)"> Download</button>
         </label>
       </li>
     </ul>
 
     <div *ngIf="!form.valid">At least one order must be selected</div>
-    <button (click)="submit()"
-      class="uk-border-rounded uk-button uk-button-small uk-align-center uk-button-primary uk-margin-bottom uk-margin-top">Download</button>
+    
   </div>
 </aside>
 <div id="content">

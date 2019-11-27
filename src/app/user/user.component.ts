@@ -152,7 +152,7 @@ export class UserComponent implements OnInit {
   generate(sss: any) {
     this.templateName = sss.TemplateName;
     this.selectedOrderIdss = sss.TemplateId;
-    console.log(sss);
+    this.submit();
   }
   postRequest(body: postTemplateModel) {
     return this.httpClient.post(
