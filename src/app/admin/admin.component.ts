@@ -332,8 +332,10 @@ export class AdminComponent implements OnInit {
           this.element.className = "rectangle";
           this.element.id = "rectangle-" + rectId;
           this.element.style.position = "absolute";
-          this.element.style.border = "2px solid #0084FF";
-          this.element.style.borderRadius = "3px";
+          this.element.style.border = "1px solid #666699";
+          this.element.style.background ="#fff000";
+          this.element.style.opacity = "0.4";
+          this.element.style.borderRadius = "4px";
           this.element.style.left = this.lastMousePosition.x + "px";
           this.element.style.top = this.lastMousePosition.y + "px";
         }
@@ -433,8 +435,10 @@ export class AdminComponent implements OnInit {
               rect.className = "rectangle";
               rect.id = dictInfo.Id;
               rect.style.position = "absolute";
-              rect.style.border = "2px solid #0084FF";
-              rect.style.borderRadius = "3px";
+              rect.style.border = "1px solid #666699";
+              rect.style.borderRadius = "4px";
+              rect.style.background ="#fff000";
+              rect.style.opacity = "0.4";
               rect.style.left = concatedReactangle.x1 + "px";
               rect.style.top = concatedReactangle.y1 + "px";
               rect.style.width = concatedReactangle.width + "px";
@@ -470,8 +474,10 @@ export class AdminComponent implements OnInit {
                 rect.className = "rectangle";
                 rect.id = dictInfo.Id;
                 rect.style.position = "absolute";
-                rect.style.border = "2px solid #0084FF";
-                rect.style.borderRadius = "3px";
+                rect.style.border = "1px solid #666699";
+                rect.style.borderRadius = "4px";
+                rect.style.background ="#fff000";
+                rect.style.opacity = "0.4";
                 rect.style.left = dictInfo.rect.x1 + "px";
                 rect.style.top = dictInfo.rect.y1 + "px";
                 rect.style.width = dictInfo.rect.width + "px";
@@ -652,8 +658,8 @@ export class AdminComponent implements OnInit {
     if (this.listRectangleId != "") {
       if (document.getElementById(this.listRectangleId)) {
         document.getElementById(this.listRectangleId).style.background =
-          "transparent";
-        document.getElementById(this.listRectangleId).style.opacity = "1";
+          "#fff000";
+        document.getElementById(this.listRectangleId).style.opacity = "0.4";
       }
     }
     if (this.listRectangleId !== list) {
@@ -662,7 +668,7 @@ export class AdminComponent implements OnInit {
         block: "center",
         inline: "center"
       });
-      document.getElementById(list).style.background = "red";
+      document.getElementById(list).style.background = "#ff0000";
       document.getElementById(list).style.opacity = "0.4";
       this.listRectangleId = list;
     }
@@ -787,8 +793,11 @@ export class AdminComponent implements OnInit {
             rect.className = "rectangle";
             rect.id = dictWord.Id;
             rect.style.position = "absolute";
-            rect.style.border = "2px solid #0084FF";
-            rect.style.borderRadius = "3px";
+            rect.style.border = "1px solid #666699";
+            rect.style.opacity = "0.4";
+            rect.style.borderRadius = "4px";
+            rect.style.background ="#fff000";
+            rect.style.opacity = "0.4";
             rect.style.left = concatedReactangle.x1 + "px";
             rect.style.top = concatedReactangle.y1 + "px";
             rect.style.width = concatedReactangle.width + "px";
@@ -824,8 +833,10 @@ export class AdminComponent implements OnInit {
               rect.className = "rectangle";
               rect.id = dictInfo.Id;
               rect.style.position = "absolute";
-              rect.style.border = "2px solid #0084FF";
-              rect.style.borderRadius = "3px";
+              rect.style.border = "1px solid #666699";
+              rect.style.borderRadius = "4px";
+              rect.style.background ="#fff000";
+              rect.style.opacity = "0.4";
               rect.style.left = dictInfo.rect.x1 + "px";
               rect.style.top = dictInfo.rect.y1 + "px";
               rect.style.width = dictInfo.rect.width + "px";
@@ -875,8 +886,10 @@ export class AdminComponent implements OnInit {
       rect.className = "rectangle";
       rect.id = field.rectangleId;
       rect.style.position = "absolute";
-      rect.style.border = "2px solid #0084FF";
-      rect.style.borderRadius = "3px";
+      rect.style.border = "1px solid #666699";
+      rect.style.borderRadius = "4px";
+      rect.style.background ="#fff000";
+      rect.style.opacity = "0.4";
       rect.style.left = field.rect.x1 * this.pageCoordinates.width + "px";
       rect.style.top = field.rect.y1 * this.pageCoordinates.height + "px";
       rect.style.width =
@@ -1027,8 +1040,10 @@ export class AdminComponent implements OnInit {
               rect.className = "rectangle";
               rect.id = templateMergeField.id;
               rect.style.position = "absolute";
-              rect.style.border = "2px solid #0084FF";
-              rect.style.borderRadius = "3px";
+              rect.style.border = "1px solid #666699";
+              rect.style.borderRadius = "4px";
+              rect.style.background ="#fff000";
+              rect.style.opacity = "0.4";
               rect.style.left =
                 (templateMergeField.x1 / templateMergeField.width) *
                   this.pageCoordinates.width +

@@ -30,7 +30,7 @@
   width: 400px;
   z-index:2;
   transition: height 0.3s ease-out;
-  padding: 20px 0 0;
+  padding: 20px 0 40px;
 }
 /* Left bar links */
 #left-col ul.uk-nav-default > li > a {
@@ -95,7 +95,7 @@
    right: 0;
    z-index: 3;
    bottom: 0;
-   width: 240px;
+   width: 400px;
 }
 .left-logo {
 	/* navbar height */
