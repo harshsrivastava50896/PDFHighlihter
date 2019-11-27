@@ -3,7 +3,8 @@
     <nav class="uk-navbar uk-light" data-uk-navbar="mode:click; duration: 250">
       <div class="uk-navbar-left">
         <div class="uk-navbar-item">
-          <a class="uk-logo uk-flex uk-flex-middle" href="#"><img class="custom-logo" src="assets/Logo1.png" alt="" /></a>
+          <a class="uk-logo uk-flex uk-flex-middle" href="#"><img class="custom-logo" src="assets/Logo1.png"
+              alt="" /></a>
         </div>
       </div>
       <div class="uk-navbar-right">
@@ -27,7 +28,8 @@
             <a [routerLink]="['/admin']" data-uk-icon="icon: settings" title="Admin Portal" data-uk-tooltip></a>
           </li>
           <li>
-            <a [routerLink]="['/applicationname']" data-uk-icon="icon:  sign-out" title="Add Application" data-uk-tooltip></a>
+            <a [routerLink]="['/applicationname']" data-uk-icon="icon:  sign-out" title="Add Application"
+              data-uk-tooltip></a>
           </li>
           <li>
             <a class="uk-navbar-toggle" data-uk-toggle data-uk-navbar-toggle-icon href="#offcanvas-nav"
@@ -82,14 +84,14 @@
 
     <ul class="uk-list uk-list-striped">
       <li class="uk-flex" *ngFor="let order of ordersData  | filter : searchText; let i = index">
-          <!-- <input type="radio" class="uk-radio" name="TemplateName" value="order.TemplateId" (click)="generate(order)"> -->
-          {{order.TemplateName}} 
-          <a href="" class="uk-icon-button uk-margin-auto-left" uk-icon="download"></a>
+        <!-- <input type="radio" class="uk-radio" name="TemplateName" value="order.TemplateId" (click)="generate(order)"> -->
+        {{order.TemplateName}}
+        <a class="uk-icon-button uk-margin-auto-left" (click)="generate(order)" uk-icon="download"></a>
       </li>
     </ul>
 
     <div *ngIf="!form.valid">At least one order must be selected</div>
-    
+
   </div>
 </aside>
 <div id="content">
