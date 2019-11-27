@@ -1110,6 +1110,15 @@ export class AdminComponent implements OnInit {
           );
           this.processsingData = false;
           this.showEditableTemplateData = true;
+          this.HighlightedFields.forEach(highlightedItem => {
+            var i = this.MergeFieldsSelectedList.findIndex(
+              selectedListItem =>
+                selectedListItem.mergeFieldText == highlightedItem.mergeFieldText
+            );
+            if (i <= -1) {
+              this.MergeFieldsSelectedList.push(highlightedItem);
+            }
+          });
         }, 5000);
       });
   }
