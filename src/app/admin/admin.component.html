@@ -9,7 +9,7 @@
       <div class="uk-navbar-right">
         <div class="uk-margin-right">
           <div uk-form-custom="target: > * > span:first-child">
-              <select class="" (change)=changeProject($event.target.value)>
+              <select class="" [(ngModel)]="projectName" (change)=changeProject($event.target.value)>
                 <option disabled value="">Select Project</option>
                 <option *ngFor="let app of allApplications" [selected]="LFG" [value]="app">{{app}}</option>
               </select>
@@ -51,7 +51,7 @@
       </button>
     </div>
     <button (click)="showExistingTemplates()" class="uk-button uk-border-rounded uk-button-primary uk-border-rounded uk-button-small uk-margin-left">Edit Templates</button>
-    <button *ngIf="showAutoDectionButton" class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-margin-left"  (click)="runMlModel()">Run Auto Detection</button>
+    <!-- <button *ngIf="showAutoDectionButton" class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-margin-left"  (click)="runMlModel()">Run Auto Detection</button> -->
   </div>
   
   
@@ -138,7 +138,7 @@
     </li>
   </ul>
 
-  <table class="uk-table uk-table-small uk-margin-remove" *ngIf="showTemplatesToBeModified">
+  <table class="uk-table uk-table-small uk-table-striped uk-margin-remove" *ngIf="showEditableTemplateData">
     <thead>
       <tr>
         <th>Text Selected</th>

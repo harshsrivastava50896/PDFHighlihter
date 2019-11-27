@@ -53,6 +53,7 @@ export class UserComponent implements OnInit {
   ngOnInit() {
     this.apiService.getAllApplications().subscribe((appData: any) => {
       this.allApplications = appData;
+      this.projectName = appData[0];
     })
   }
 
@@ -151,7 +152,7 @@ export class UserComponent implements OnInit {
   generate(sss: any) {
     this.templateName = sss.TemplateName;
     this.selectedOrderIdss = sss.TemplateId;
-    console.log(sss);
+    this.submit();
   }
   postRequest(body: postTemplateModel) {
     return this.httpClient.post(
