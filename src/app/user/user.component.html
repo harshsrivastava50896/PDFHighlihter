@@ -81,12 +81,10 @@
     </div>
 
     <ul class="uk-list uk-list-striped">
-      <li *ngFor="let order of ordersData  | filter : searchText; let i = index">
-        <label>
+      <li class="uk-flex" *ngFor="let order of ordersData  | filter : searchText; let i = index">
           <!-- <input type="radio" class="uk-radio" name="TemplateName" value="order.TemplateId" (click)="generate(order)"> -->
           {{order.TemplateName}} 
-          <button  (click)="generate(order)"> Download</button>
-        </label>
+          <a href="" class="uk-icon-button uk-margin-auto-left" uk-icon="download"></a>
       </li>
     </ul>
 

@@ -161,13 +161,11 @@
       </tr>
     </tbody>
   </table>
-  <div *ngIf="showEditableTemplateData" class="uk-flex uk-flex-center uk-margin-top uk-margin-large-bottom">
-    <button class="uk-button uk-button-default uk-button-small uk-border-rounded" (click)="addExtraMergeField()">Add Merge Field</button>
-  </div>
 
   <div class="bar-bottom">
     <div class="uk-flex uk-flex-center">
-        <button *ngIf="showEditableTemplateData" (click)="GenerateTemplate()" class="uk-button uk-button-primary uk-border-rounded uk-button-small">
+        <button *ngIf="showEditableTemplateData" class="uk-button uk-button-default uk-button-small uk-border-rounded" (click)="addExtraMergeField()">Add Merge Field</button>
+        <button *ngIf="showEditableTemplateData" (click)="GenerateTemplate()" class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-margin-left">
           Generate Template
         </button>
         <button *ngIf="confirmationButton" (click)="verifyTemplate()" class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-margin-left">
