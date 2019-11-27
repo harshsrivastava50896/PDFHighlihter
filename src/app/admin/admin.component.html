@@ -58,7 +58,8 @@
   </div>
 
 
-  <button *ngIf="showAutoDectionButton" class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-margin-small-left"
+  <button *ngIf="showAutoDectionButton"
+    class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-margin-small-left"
     (click)="runMlModel()">Run Auto Detection</button>
   <button *ngIf="showEmptyFieldDetection"
     class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-margin-left"
@@ -75,8 +76,7 @@
     </div>
     <p class="uk-margin-remove loader-text">{{ loaderMessage }}</p>
   </div>
-
-  <table *ngIf="showForm" class="uk-table uk-table-small uk-table-striped uk-margin-remove">
+  <table *ngIf="showForm" class="uk-table uk-table-small uk-table-striped uk-margin-remove ">
     <thead>
       <tr>
         <th>Text Selected</th>

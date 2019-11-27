@@ -777,7 +777,6 @@ export class AdminComponent implements OnInit {
               words[lenOfWords - 1]
             )
           ) {
-            // console.log("Inside if block", index, lenOfWords, words);
             concatedReactangle.x1 = this.DictionaryInfoInPixel[index].rect.x1;
             concatedReactangle.x2 = this.DictionaryInfoInPixel[
               index + lenOfWords - 1
