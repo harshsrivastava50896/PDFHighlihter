@@ -173,6 +173,7 @@ export class AdminComponent implements OnInit {
     this.adminService.GetAllApplications().subscribe((appData: any) => {
       this.allApplications = appData;
       this.projectName = appData[0];
+      this.changeProject();
     });
   }
 
@@ -295,7 +296,7 @@ export class AdminComponent implements OnInit {
             if (this.rect.width > 0 && this.rect.height > 0) {
               document
                 .getElementsByClassName("to-draw-rectangle")
-                [this.dataPageNumber - 1].appendChild(this.element);
+              [this.dataPageNumber - 1].appendChild(this.element);
             }
           }
         }
@@ -333,7 +334,7 @@ export class AdminComponent implements OnInit {
           this.element.id = "rectangle-" + rectId;
           this.element.style.position = "absolute";
           this.element.style.border = "1px solid #666699";
-          this.element.style.background ="#fff000";
+          this.element.style.background = "#fff000";
           this.element.style.opacity = "0.4";
           this.element.style.borderRadius = "4px";
           this.element.style.left = this.lastMousePosition.x + "px";
@@ -437,7 +438,7 @@ export class AdminComponent implements OnInit {
               rect.style.position = "absolute";
               rect.style.border = "1px solid #666699";
               rect.style.borderRadius = "4px";
-              rect.style.background ="#fff000";
+              rect.style.background = "#fff000";
               rect.style.opacity = "0.4";
               rect.style.left = concatedReactangle.x1 + "px";
               rect.style.top = concatedReactangle.y1 + "px";
@@ -476,7 +477,7 @@ export class AdminComponent implements OnInit {
                 rect.style.position = "absolute";
                 rect.style.border = "1px solid #666699";
                 rect.style.borderRadius = "4px";
-                rect.style.background ="#fff000";
+                rect.style.background = "#fff000";
                 rect.style.opacity = "0.4";
                 rect.style.left = dictInfo.rect.x1 + "px";
                 rect.style.top = dictInfo.rect.y1 + "px";
@@ -637,7 +638,7 @@ export class AdminComponent implements OnInit {
   }
 
   delete(dataFiled: MergeFieldContainer) {
-    var toDeleteItems: any = this.HighlightedFields.filter(function(val) {
+    var toDeleteItems: any = this.HighlightedFields.filter(function (val) {
       return val.mergeFieldText == dataFiled.mergeFieldText;
     });
     setTimeout(() => {
@@ -647,7 +648,7 @@ export class AdminComponent implements OnInit {
         }, 100);
       });
     }, 1000);
-    this.MergeFieldsSelectedList = this.MergeFieldsSelectedList.filter(function(
+    this.MergeFieldsSelectedList = this.MergeFieldsSelectedList.filter(function (
       val
     ) {
       return val.mergeFieldText != dataFiled.mergeFieldText;
@@ -725,7 +726,7 @@ export class AdminComponent implements OnInit {
                   .pipe(this.delayedRetry(10000, 8))
                   .subscribe((conversion: any) => {
                     this.Dictionary = conversion.data;
-                    setTimeout(() => {}, 2000);
+                    setTimeout(() => { }, 2000);
                     this.CalculateDictInfoInPixels();
                     this.loaderMessage = "Analyzing Document";
                     this.adminService
@@ -734,7 +735,7 @@ export class AdminComponent implements OnInit {
                       .subscribe((pythonResponse: any[]) => {
                         this.MLMap = pythonResponse;
                         this.showAutoDectionButton = true;
-                        setTimeout(() => {}, 2000);
+                        setTimeout(() => { }, 2000);
 
                         // To get blank fields
                         this.adminService
@@ -796,7 +797,7 @@ export class AdminComponent implements OnInit {
             rect.style.border = "1px solid #666699";
             rect.style.opacity = "0.4";
             rect.style.borderRadius = "4px";
-            rect.style.background ="#fff000";
+            rect.style.background = "#fff000";
             rect.style.opacity = "0.4";
             rect.style.left = concatedReactangle.x1 + "px";
             rect.style.top = concatedReactangle.y1 + "px";
@@ -835,7 +836,7 @@ export class AdminComponent implements OnInit {
               rect.style.position = "absolute";
               rect.style.border = "1px solid #666699";
               rect.style.borderRadius = "4px";
-              rect.style.background ="#fff000";
+              rect.style.background = "#fff000";
               rect.style.opacity = "0.4";
               rect.style.left = dictInfo.rect.x1 + "px";
               rect.style.top = dictInfo.rect.y1 + "px";
@@ -888,7 +889,7 @@ export class AdminComponent implements OnInit {
       rect.style.position = "absolute";
       rect.style.border = "1px solid #666699";
       rect.style.borderRadius = "4px";
-      rect.style.background ="#fff000";
+      rect.style.background = "#fff000";
       rect.style.opacity = "0.4";
       rect.style.left = field.rect.x1 * this.pageCoordinates.width + "px";
       rect.style.top = field.rect.y1 * this.pageCoordinates.height + "px";
@@ -1019,12 +1020,12 @@ export class AdminComponent implements OnInit {
           .S3Download(pdfData.TemplateId, constants.S3DocType.Dictionary)
           .subscribe(dict => {
             this.Dictionary = dict.data;
-            setTimeout(() => {}, 2000);
+            setTimeout(() => { }, 2000);
             this.CalculateDictInfoInPixels();
           });
         this.processsingData = true;
         this.loaderMessage = "Fetching Template Details";
-        this.showTemplatesToBeModified= false;
+        this.showTemplatesToBeModified = false;
 
         setTimeout(() => {
           this.pageCoordinates = document
@@ -1042,25 +1043,25 @@ export class AdminComponent implements OnInit {
               rect.style.position = "absolute";
               rect.style.border = "1px solid #666699";
               rect.style.borderRadius = "4px";
-              rect.style.background ="#fff000";
+              rect.style.background = "#fff000";
               rect.style.opacity = "0.4";
               rect.style.left =
                 (templateMergeField.x1 / templateMergeField.width) *
-                  this.pageCoordinates.width +
+                this.pageCoordinates.width +
                 "px";
               rect.style.top =
                 (templateMergeField.y1 / templateMergeField.height) *
-                  this.pageCoordinates.height +
+                this.pageCoordinates.height +
                 "px";
               rect.style.width =
                 ((templateMergeField.x2 - templateMergeField.x1) /
                   templateMergeField.width) *
-                  this.pageCoordinates.width +
+                this.pageCoordinates.width +
                 "px";
               rect.style.height =
                 ((templateMergeField.y2 - templateMergeField.y1) /
                   templateMergeField.height) *
-                  this.pageCoordinates.height +
+                this.pageCoordinates.height +
                 "px";
               rect.style.cursor = "pointer";
               this.path
@@ -1070,13 +1071,13 @@ export class AdminComponent implements OnInit {
                 new MergeFieldContainer(
                   templateMergeField.id,
                   (templateMergeField.x1 / templateMergeField.width) *
-                    this.pageCoordinates.width,
+                  this.pageCoordinates.width,
                   (templateMergeField.x2 / templateMergeField.width) *
-                    this.pageCoordinates.width,
+                  this.pageCoordinates.width,
                   (templateMergeField.y1 / templateMergeField.height) *
-                    this.pageCoordinates.height,
+                  this.pageCoordinates.height,
                   (templateMergeField.y2 / templateMergeField.height) *
-                    this.pageCoordinates.height,
+                  this.pageCoordinates.height,
                   this.pageCoordinates.height,
                   this.pageCoordinates.width,
                   templateMergeField.mergeFieldText,
@@ -1090,13 +1091,13 @@ export class AdminComponent implements OnInit {
                 new MergeFieldContainer(
                   templateMergeField.id,
                   (templateMergeField.x1 / templateMergeField.width) *
-                    this.pageCoordinates.width,
+                  this.pageCoordinates.width,
                   (templateMergeField.x2 / templateMergeField.width) *
-                    this.pageCoordinates.width,
+                  this.pageCoordinates.width,
                   (templateMergeField.y1 / templateMergeField.height) *
-                    this.pageCoordinates.height,
+                  this.pageCoordinates.height,
                   (templateMergeField.y2 / templateMergeField.height) *
-                    this.pageCoordinates.height,
+                  this.pageCoordinates.height,
                   this.pageCoordinates.height,
                   this.pageCoordinates.width,
                   templateMergeField.mergeFieldText,
@@ -1123,10 +1124,10 @@ export class AdminComponent implements OnInit {
     }
     return bytes.buffer;
   }
-  changeProject(event: any) {
-    this.projectName = event;
+  changeProject() {
+    //this.projectName = event;
     if (event !== undefined) {
-      this.adminService.GetMergeFieldsNames(event).subscribe(fields => {
+      this.adminService.GetMergeFieldsNames(this.projectName).subscribe(fields => {
         this.mergeFieldTypes = fields;
       });
     }
