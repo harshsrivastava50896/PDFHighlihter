@@ -59,13 +59,21 @@
     </div>
   </div> -->
   <h2 *ngIf="(currentApplication)">Merge Field Name</h2>
-  <div class="uk-card uk-card-small uk-border-rounded uk-box-shadow-large uk-card-default uk-card-body" *ngIf="(currentApplication)">
+  <div class="uk-child-width-1-4@m" uk-grid *ngIf="(currentApplication)">
+    <div *ngFor="let detail of currentApplicationDetails">
+    <div  class="uk-alert-primary" uk-alert>
+      <a class="uk-alert-close" uk-close></a>
+      <h3>{{detail.FieldName}}</h3>
+    </div>
+  </div>
+  </div>
+  <!-- <div class="uk-card uk-card-small uk-border-rounded uk-box-shadow-large uk-card-default uk-card-body" *ngIf="(currentApplication)">
       <div class="uk-child-width-1-4@m uk-grid-small uk-grid-match" uk-grid>
         <div *ngFor="let detail of currentApplicationDetails">
             <h3 class="uk-card-title">{{detail.FieldName}}</h3>
         </div>
       </div>
-  </div>
+  </div> -->
   <div *ngIf="(addProj)" class="uk-form-stacked">
       <h2>
         Add New Project
