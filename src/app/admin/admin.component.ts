@@ -712,6 +712,15 @@ export class AdminComponent implements OnInit {
                     .getElementById("page1")
                     .getBoundingClientRect();
                   this.CalculateDictInfoInPixels();
+                  if (this.pageCoordinates.x == 0) {
+                    setTimeout(() => {
+                      this.pageCoordinates = document
+                        .getElementById("page1")
+                        .getBoundingClientRect();
+                      this.CalculateDictInfoInPixels();
+                      console.log("area gage", this.pageCoordinates);
+                    }, 1500);
+                  }
                   console.log("area gage", this.pageCoordinates);
                 }, 1000);
               } else {
@@ -764,7 +773,7 @@ export class AdminComponent implements OnInit {
   }
   runMlModel() {
     this.MLMap.forEach(mlWord => {
-      if (mlWord.text.split(" ").length > 1) {
+      if (mlWord.text.split(" ").length > 1 && (!mlWord.text.includes("hereof") && !mlWord.text.includes("premises"))) {
         let words = mlWord.text.split(" ");
         let lenOfWords = words.length;
         let concatedReactangle: Rectangle = new Rectangle();
@@ -826,7 +835,7 @@ export class AdminComponent implements OnInit {
         });
       } else {
         this.DictionaryInfoInPixel.forEach(dictInfo => {
-          if (dictInfo.Text.includes(mlWord.text)) {
+          if (dictInfo.Text.includes(mlWord.text) && (!mlWord.text.includes("hereof") && !mlWord.text.includes("premises"))) {
             if (typeof dictInfo !== undefined) {
               // console.log("indicated text:", dictInfo.Text);
               const rect = document.createElement("div");
